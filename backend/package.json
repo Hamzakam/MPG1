@@ -1,9 +1,10 @@
 {
-  "name": "peerhub-backend",
+  "name": "backend",
   "version": "0.0.1",
   "description": "Community based platform",
   "main": "index.js",
   "scripts": {
+    "start":"node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Amit Ranjan,Ananya Tapi,Ashutosh Pandey,Hamza Kamal",
