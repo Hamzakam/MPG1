@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 backend/node_modules
 frontend/node_modules
 backend/.env
@@ -7,3 +8,6 @@ recommender/connStr.py
 recommender/recommender.ipynb
 backend/utils/.ipynb_checkpoints/
 backend/controllers/.ipynb_checkpoints/
+=======
+node_modules
+>>>>>>> e0f996b (Added package.json)
