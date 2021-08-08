@@ -1,5 +1,5 @@
 {
-  "name": "peerhub",
+  "name": "peerhub-backend",
   "version": "0.0.1",
   "description": "Community based platform",
   "main": "index.js",
