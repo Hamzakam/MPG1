@@ -13,6 +13,11 @@ body {
 h1{
   text-align: center;
 }
+.Post{
+  border: 0.2em solid black;
+  margin: 0.5em;
+  padding:2em;
+}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
