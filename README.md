@@ -5,7 +5,7 @@ Users will be able share their ideas and Opinions via posting on community chann
 # Project Description
 Peerhub is a Community Driven Forum where users post their opinions,ideas,stories,queries or moments of their life. Users can create communities where people can post threads relevant to those communities. Anyone can participate in any discussion in  communities they are interested. Communities will be recommended based on user's preferences and interactions.
 # Contributors
-* Amit Ranjan (github.com/pandeyxamit)
-* Ananya Tapi (github.com/AangTheLast)
-* Ashutosh Pandey (github.com/Ashutosh31-pandey)
-* Hamza Kamal (github.com/Hamzakam)
+* Amit Ranjan [View Profile!](github.com/pandeyxamit)
+* Ananya Tapi [View Profile!](github.com/AangTheLast)
+* Ashutosh Pandey [View Profile!](github.com/Ashutosh31-pandey)
+* Hamza Kamal [View Profile!](github.com/Hamzakam)
