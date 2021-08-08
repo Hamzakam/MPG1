@@ -14,9 +14,10 @@ h1{
   text-align: center;
 }
 .Post{
-  border: 0.2em solid black;
+  border: 0.2em solid #1e1e2b;
   margin: 0.5em;
-  padding:2em;
+  padding:1.5em;
+  background-color: #827397;
 }
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
