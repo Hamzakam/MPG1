@@ -1,6 +1,16 @@
+//Creates express.Router PostsRouter and assigns get,getbyid,post,put,delete.
+//using express-async-errors as wrapper for throwing/catching/passing errors.
+
 const Posts = require("../models/posts");
 const postsRouter = require("express").Router();
 require("express-async-errors");
+
+postsRouter.get("/", (request, response) => {
+    Posts.find({})
+        .then((result) => response.json(result))
+        .catch((error) => next(error));
+});
+
 postsRouter.get("/", async (request, response) => {
     const posts = await Posts.find({});
     response.json(posts);
@@ -15,6 +25,7 @@ postsRouter.post("/", async (request, response) => {
     const postsObject = new Posts({
         title: request.body.title,
         content: request.body.content,
+        tags: request.body.tags,
     });
     await postsObject.save();
     response.status(201).end();

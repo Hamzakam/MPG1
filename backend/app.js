@@ -1,3 +1,5 @@
+//Creates an express application and uses middleware and routes
+
 const express = require("express");
 require("dotenv").config();
 const mongoose = require("mongoose");

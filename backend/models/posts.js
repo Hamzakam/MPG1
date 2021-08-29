@@ -1,3 +1,5 @@
+//Defining schema fro Posts.
+
 const mongoose = require("mongoose");
 
 const PostsSchema = mongoose.Schema({
@@ -19,6 +21,10 @@ const PostsSchema = mongoose.Schema({
         type: Date,
         default: Date.now,
         required: "Must have the date when the post is created",
+    },
+    tags: {
+        type: [String],
+        default: [],
     },
 });
 
