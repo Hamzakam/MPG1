@@ -36,6 +36,7 @@ postsRouter.put("/:id", async (request, response) => {
         title: request.body.title,
         content: request.body.content,
         upvotes: request.body.upvotes,
+        tags: request.body.tags,
     };
     await Posts.findByIdAndUpdate(request.params.id, posts);
     response.status(200).end();
