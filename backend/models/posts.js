@@ -1,4 +1,4 @@
-//Defining schema fro Posts.
+//Defining schema for Posts.
 
 const mongoose = require("mongoose");
 

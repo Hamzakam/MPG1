@@ -26,6 +26,7 @@ postsRouter.post("/", async (request, response) => {
         title: request.body.title,
         content: request.body.content,
         tags: request.body.tags,
+        upvotes: request.body.upvotes,
     });
     await postsObject.save();
     response.status(201).end();
