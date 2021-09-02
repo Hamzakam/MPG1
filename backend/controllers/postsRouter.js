@@ -3,9 +3,10 @@
 
 const Posts = require("../models/posts");
 const postsRouter = require("express").Router();
+const { userExtractor } = require("../utils/middleware");
 require("express-async-errors");
 
-postsRouter.get("/", (request, response) => {
+postsRouter.get("/", (request, response, next) => {
     Posts.find({})
         .then((result) => response.json(result))
         .catch((error) => next(error));
@@ -21,15 +22,15 @@ postsRouter.get("/:id", async (request, response) => {
     response.json(post);
 });
 
-postsRouter.post("/", async (request, response) => {
+postsRouter.post("/", userExtractor, async (request, response) => {
     const postsObject = new Posts({
         title: request.body.title,
         content: request.body.content,
         upvotes: request.body.upvotes,
         tags: request.body.tags,
-        upvotes: request.body.upvotes,
     });
-    await postsObject.save();
+    const savedPost = await postsObject.save();
+    request.user.posts = request.user.posts.concat(savedPost._id);
     response.status(201).end();
 });
 

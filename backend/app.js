@@ -1,17 +1,25 @@
 //Creates an express application and uses middleware and routes
 
 const express = require("express");
-require("dotenv").config();
 const mongoose = require("mongoose");
+
+const postsRouter = require("./controllers/postsRouter");
+const userRouter = require("./controllers/userRouter");
+const loginRouter = require("./controllers/loginRouter");
+
 const cors = require("cors");
-const postsRouter = require("./controllers/PostsRouter");
 const middleware = require("./utils/middleware");
+const config = require("./utils/config");
+const morgan = require("morgan");
 const app = express();
+
 app.use(cors());
 app.use(express.json());
-
+app.use(
+    morgan(":method :url :status :res[content-length] - :response-time ms")
+);
 mongoose
-    .connect(process.env.MONGODB_URI, {
+    .connect(config.MONGODB_URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     })
@@ -21,7 +29,11 @@ mongoose
     .catch((error) => {
         console.log(error);
     });
+app.use(middleware.tokenExtractor);
 app.use("/api/posts/", postsRouter);
+app.use("/api/users", userRouter);
+app.use("/api/login", loginRouter);
+
 app.use(middleware.errorHandler);
 app.use(middleware.unknownEndPointHandler);
 module.exports = app;
