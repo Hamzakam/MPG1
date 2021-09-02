@@ -25,6 +25,7 @@ postsRouter.post("/", async (request, response) => {
     const postsObject = new Posts({
         title: request.body.title,
         content: request.body.content,
+        upvotes: request.body.upvotes,
         tags: request.body.tags,
         upvotes: request.body.upvotes,
     });
