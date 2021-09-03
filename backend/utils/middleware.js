@@ -11,8 +11,12 @@ const errorHandler = (error, request, response, next) => {
         return response.status(400).json({ error: error.message });
     } else if (error.name === "credentialError") {
         return response
-            .status(200)
+            .status(401)
             .json({ error: "Invalid password or username" });
+    } else if (error.name === "unauthorizedAccessError") {
+        return response
+            .status(401)
+            .json({ error: "Access to resource denied" });
     }
     next(error);
 };
