@@ -3,6 +3,7 @@
 
 const Posts = require("../models/posts");
 const postsRouter = require("express").Router();
+const Community = require("../models/communities");
 const { userExtractor } = require("../utils/middleware");
 require("express-async-errors");
 
@@ -17,16 +18,26 @@ postsRouter.get("/:id", async (request, response) => {
 });
 
 postsRouter.post("/", userExtractor, async (request, response) => {
+    console.log(request.body.community);
+    const community = await Community.findById(request.body.community);
+    console.log(Community.name);
+    if (!community) {
+        throw { name: "notFoundError" };
+    }
     const postsObject = new Posts({
         title: request.body.title,
         content: request.body.content,
         upvotes: request.body.upvotes,
         tags: request.body.tags,
         user: request.user._id,
+        community: community._id,
     });
+
     const savedPost = await postsObject.save();
     request.user.posts = request.user.posts.concat(savedPost._id);
+    community.posts = community.posts.concat(savedPost._id);
     await request.user.save();
+    await community.save();
     response.status(201).json({ message: "Successful Post" });
 });
 
@@ -39,7 +50,9 @@ postsRouter.put("/:id", userExtractor, async (request, response) => {
     };
     const post = await Posts.findById(id);
     if (post && post.user._id.toString() === request.user._id.toString()) {
-        await Posts.findByIdAndUpdate(request.params.id, posts);
+        await Posts.findByIdAndUpdate(request.params.id, posts, {
+            runValidators: true,
+        });
         response.status(200).end();
     } else {
         throw { name: "unauthorizedAccessError" };

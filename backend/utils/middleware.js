@@ -1,5 +1,6 @@
 const logger = require("./logger");
 const User = require("../models/users");
+const Community = require("../models/communities");
 const jwt = require("jsonwebtoken");
 const config = require("./config");
 
@@ -13,7 +14,12 @@ const errorHandler = (error, request, response, next) => {
         return response
             .status(401)
             .json({ error: "Invalid password or username" });
-    } else if (error.name === "unauthorizedAccessError") {
+    } else if (error.name === "notFoundError") {
+        return response.status(404).json({ error: "No Resource Error" });
+    } else if (
+        error.name === "unauthorizedAccessError" ||
+        error.name === "jsonWebTokenError"
+    ) {
         return response
             .status(401)
             .json({ error: "Access to resource denied" });
@@ -36,7 +42,8 @@ const tokenExtractor = (request, response, next) => {
 };
 
 const userExtractor = async (request, response, next) => {
-    const decodedToken = jwt.verify(request.token, config.SECRET);
+    const decodedToken =
+        request.token != null ? jwt.verify(request.token, config.SECRET) : null;
     if (!request.token || !decodedToken) {
         throw { name: "jsonWebTokenError" };
     }
@@ -45,9 +52,24 @@ const userExtractor = async (request, response, next) => {
     next();
 };
 
+const communityExtractor = async (request, response, next) => {
+    const id = request.params.id;
+    const community = await Community.findById(id);
+    if (
+        !community &&
+        community.createdBy.toString() !== request.user._id.toString()
+    ) {
+        throw { name: "unauthorizedAccessError" };
+    } else {
+        request.community = community;
+    }
+    next();
+};
+
 module.exports = {
     errorHandler,
     unknownEndPointHandler,
     tokenExtractor,
     userExtractor,
+    communityExtractor,
 };

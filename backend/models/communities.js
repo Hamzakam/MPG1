@@ -8,6 +8,7 @@ const communitySchema = mongoose.Schema({
         type: String,
         required: true,
         minLength: 4,
+        unique: true,
     },
     description: {
         type: String,
@@ -30,10 +31,10 @@ const communitySchema = mongoose.Schema({
         },
     ],
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    comments: [
+    posts: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "comment",
+            ref: "Posts",
         },
     ],
 });
