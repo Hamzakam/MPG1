@@ -51,14 +51,18 @@ postsRouter.put("/:id", userExtractor, async (request, response) => {
         tags: request.body.tags,
     };
     const post = await Posts.findById(id);
-    if (post && post.user._id.toString() === request.user._id.toString()) {
-        await Posts.findByIdAndUpdate(request.params.id, posts, {
-            runValidators: true,
-        });
-        response.status(200).end();
-    } else {
+    if (!post && post.user._id.toString() !== request.user._id.toString()) {
         throw { name: "unauthorizedAccessError" };
     }
+    const postUpdated = await Posts.findByIdAndUpdate(
+        request.params.id,
+        posts,
+        {
+            runValidators: true,
+            new: true,
+        }
+    );
+    response.status(200).json(postUpdated);
 });
 
 postsRouter.delete("/:id", userExtractor, async (request, response) => {

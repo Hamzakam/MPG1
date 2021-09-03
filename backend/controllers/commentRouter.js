@@ -1,6 +1,6 @@
 const commentRouter = require("express").Router();
 const Comment = require("../models/comments");
-const { userExtractor } = require("../utils/middleware");
+const { userExtractor, commentExtracter } = require("../utils/middleware");
 const Posts = require("../models/posts");
 require("express-async-errors");
 
@@ -25,5 +25,35 @@ commentRouter.get("/", async (request, response) => {
     const comments = await Comment.find({});
     response.status(200).json(comments);
 });
+
+commentRouter.put(
+    "/:id",
+    userExtractor,
+    commentExtracter,
+    async (request, response) => {
+        const commentUpdated = await Comment.findByIdAndUpdate(
+            request.params.id,
+            { content: request.body.content },
+            {
+                runValidators: true,
+                new: true,
+            }
+        );
+        response.status(201).json(commentUpdated);
+    }
+);
+
+commentRouter.delete(
+    "/:id",
+    userExtractor,
+    commentExtracter,
+    async (request, response) => {
+        const commentUpdated = await Comment.findByIdAndDelete(
+            request.params.id,
+            { content: request.body.content }
+        );
+        response.status(204).json(commentUpdated);
+    }
+);
 
 module.exports = commentRouter;
