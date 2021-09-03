@@ -3,18 +3,20 @@
 const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 
-const postsSchema = mongoose.Schema({
-    title: {
+const communitySchema = mongoose.Schema({
+    name: {
         type: String,
         required: true,
-        minLength: 5,
+        minLength: 4,
+        unique: true,
     },
-    content: {
+    description: {
         type: String,
         required: true,
-        minLength: 10,
+        minLength: 20,
+        maxLength: 100,
     },
-    upvotes: {
+    members: {
         type: Number,
         default: 0,
     },
@@ -28,18 +30,18 @@ const postsSchema = mongoose.Schema({
             type: String,
         },
     ],
-    community: { type: mongoose.Schema.Types.ObjectId, ref: "Community" },
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    comments: [
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    posts: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Comment",
+            ref: "Posts",
         },
     ],
 });
 
-postsSchema.plugin(uniqueValidator);
-postsSchema.set("toJSON", {
+communitySchema.plugin(uniqueValidator);
+
+communitySchema.set("toJSON", {
     transform: (document, returnedObject) => {
         returnedObject.id = returnedObject._id.toString();
         delete returnedObject._id;
@@ -47,6 +49,6 @@ postsSchema.set("toJSON", {
     },
 });
 
-const Posts = new mongoose.model("Posts", postsSchema);
+const Community = new mongoose.model("Community", communitySchema);
 
-module.exports = Posts;
+module.exports = Community;
