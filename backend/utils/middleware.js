@@ -3,6 +3,7 @@ const User = require("../models/users");
 const Community = require("../models/communities");
 const jwt = require("jsonwebtoken");
 const config = require("./config");
+const Comment = require("../models/comments");
 
 const errorHandler = (error, request, response, next) => {
     logger.error(error);
@@ -66,10 +67,20 @@ const communityExtractor = async (request, response, next) => {
     next();
 };
 
+const commentExtracter = async (request, response, next) => {
+    const id = request.params.id;
+    const comment = await Comment.findById(id);
+    if (!comment && comment.user.toString() !== request.user._id) {
+        throw { name: "unauthorizedAccessError" };
+    }
+    next();
+};
+
 module.exports = {
     errorHandler,
     unknownEndPointHandler,
     tokenExtractor,
     userExtractor,
     communityExtractor,
+    commentExtracter,
 };
