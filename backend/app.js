@@ -9,6 +9,7 @@ const postsRouter = require("./controllers/postsRouter");
 const userRouter = require("./controllers/userRouter");
 const loginRouter = require("./controllers/loginRouter");
 const communityRouter = require("./controllers/communityRouter");
+const commentRouter = require("./controllers/commentRouter");
 
 const cors = require("cors");
 const middleware = require("./utils/middleware");
@@ -32,10 +33,11 @@ mongoose
         console.log(error);
     });
 app.use(middleware.tokenExtractor);
-app.use("/api/posts", postsRouter);
 app.use("/api/users", userRouter);
 app.use("/api/login", loginRouter);
+app.use("/api/posts", postsRouter);
 app.use("/api/sub", communityRouter);
+app.use("/api/comments", commentRouter);
 
 app.use(middleware.errorHandler);
 app.use(middleware.unknownEndPointHandler);

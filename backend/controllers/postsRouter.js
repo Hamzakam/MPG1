@@ -8,7 +8,9 @@ const { userExtractor } = require("../utils/middleware");
 require("express-async-errors");
 
 postsRouter.get("/", async (request, response) => {
-    const posts = await Posts.find({});
+    const posts = await Posts.find({}).populate("comments", {
+        content: 1,
+    });
     response.json(posts);
 });
 

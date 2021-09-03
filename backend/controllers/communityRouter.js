@@ -32,7 +32,7 @@ communityRouter.put(
         await Community.findByIdAndUpdate(id, communityUpdated, {
             runValidators: true,
         });
-        response.status(204).json({ message: "successful update" });
+        response.status(201).json({ message: "successful update" });
     }
 );
 
