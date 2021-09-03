@@ -6,12 +6,6 @@ const postsRouter = require("express").Router();
 const { userExtractor } = require("../utils/middleware");
 require("express-async-errors");
 
-postsRouter.get("/", (request, response, next) => {
-    Posts.find({})
-        .then((result) => response.json(result))
-        .catch((error) => next(error));
-});
-
 postsRouter.get("/", async (request, response) => {
     const posts = await Posts.find({});
     response.json(posts);
@@ -28,26 +22,39 @@ postsRouter.post("/", userExtractor, async (request, response) => {
         content: request.body.content,
         upvotes: request.body.upvotes,
         tags: request.body.tags,
+        user: request.user._id,
     });
     const savedPost = await postsObject.save();
     request.user.posts = request.user.posts.concat(savedPost._id);
-    response.status(201).end();
+    await request.user.save();
+    response.status(201).json({ message: "Successful Post" });
 });
 
-postsRouter.put("/:id", async (request, response) => {
+postsRouter.put("/:id", userExtractor, async (request, response) => {
+    const id = request.params.id;
     const posts = {
         title: request.body.title,
         content: request.body.content,
-        upvotes: request.body.upvotes,
         tags: request.body.tags,
     };
-    await Posts.findByIdAndUpdate(request.params.id, posts);
-    response.status(200).end();
+    const post = await Posts.findById(id);
+    if (post && post.user._id.toString() === request.user._id.toString()) {
+        await Posts.findByIdAndUpdate(request.params.id, posts);
+        response.status(200).end();
+    } else {
+        throw { name: "unauthorizedAccessError" };
+    }
 });
 
-postsRouter.delete("/:id", async (request, response) => {
-    await Posts.findByIdAndDelete(request.params.id);
-    response.status(204).end();
+postsRouter.delete("/:id", userExtractor, async (request, response) => {
+    const id = request.params.id;
+    const post = await Posts.findById(id);
+    if (post.user._id.toString() === request.user._id.toString()) {
+        await Posts.findByIdAndDelete(request.params.id);
+        response.status(204).json({ message: "successful deletion" });
+    } else {
+        throw { name: "unauthorizedAccessError" };
+    }
 });
 
 module.exports = postsRouter;
