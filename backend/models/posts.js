@@ -23,16 +23,17 @@ const postsSchema = mongoose.Schema({
         default: Date.now,
         required: "Must have the date when the post is created",
     },
-    tags: {
-        type: [String],
-        default: [],
-    },
+    tags: [
+        {
+            type: String,
+        },
+    ],
     community: { type: mongoose.Schema.Types.ObjectId, ref: "Community" },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     comments: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "comment",
+            ref: "Comment",
         },
     ],
 });
