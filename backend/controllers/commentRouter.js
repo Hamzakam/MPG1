@@ -22,7 +22,10 @@ commentRouter.post("/", userExtractor, async (request, response) => {
 });
 
 commentRouter.get("/", async (request, response) => {
-    const comments = await Comment.find({});
+    const comments = await Comment.find({}).populate("replies", {
+        content: 1,
+        user: 1,
+    });
     response.status(200).json(comments);
 });
 
@@ -48,11 +51,8 @@ commentRouter.delete(
     userExtractor,
     commentExtracter,
     async (request, response) => {
-        const commentUpdated = await Comment.findByIdAndDelete(
-            request.params.id,
-            { content: request.body.content }
-        );
-        response.status(204).json(commentUpdated);
+        await Comment.findByIdAndDelete(request.params.id);
+        response.status(204).json({ message: "Successful Delete" });
     }
 );
 

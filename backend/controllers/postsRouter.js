@@ -40,7 +40,7 @@ postsRouter.post("/", userExtractor, async (request, response) => {
     community.posts = community.posts.concat(savedPost._id);
     await request.user.save();
     await community.save();
-    response.status(201).json({ message: "Successful Post" });
+    response.status(201).json(savedPost);
 });
 
 postsRouter.put("/:id", userExtractor, async (request, response) => {
