@@ -1,25 +1,29 @@
 const commentRouter = require("express").Router();
 const Comment = require("../models/comments");
-const { userExtractor, commentExtracter } = require("../utils/middleware");
-const Posts = require("../models/posts");
+const {
+    userExtractor,
+    commentExtracter,
+    postExtractor,
+} = require("../utils/middleware");
 require("express-async-errors");
 
-commentRouter.post("/", userExtractor, async (request, response) => {
-    const body = request.body;
-    const post = await Posts.findById(body.post);
-    if (!post) {
-        throw { name: "notFoundError" };
+commentRouter.post(
+    "/",
+    userExtractor,
+    postExtractor,
+    async (request, response) => {
+        const body = request.body;
+        const comment = new Comment({
+            content: body.content,
+            post: request.post._id,
+            user: request.user._id,
+        });
+        const commentObj = await comment.save();
+        request.post.comments = request.post.comments.concat(commentObj._id);
+        await request.post.save();
+        response.status(201).json(commentObj);
     }
-    const comment = new Comment({
-        content: body.content,
-        post: post._id,
-        user: request.user._id,
-    });
-    const commentObj = await comment.save();
-    post.comments = post.comments.concat(commentObj._id);
-    await post.save();
-    response.status(201).json(commentObj);
-});
+);
 
 commentRouter.get("/", async (request, response) => {
     const comments = await Comment.find({}).populate("replies", {

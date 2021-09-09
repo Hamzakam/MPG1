@@ -26,13 +26,13 @@ communityRouter.put(
     communityExtractor,
     async (request, response) => {
         const id = request.params.id;
-        const communityUpdated = {
+        const community = {
             description: request.body.description,
             tag: request.body.tags,
         };
         const updatedCommunity = await Community.findByIdAndUpdate(
             id,
-            communityUpdated,
+            community,
             {
                 runValidators: true,
                 new: true,

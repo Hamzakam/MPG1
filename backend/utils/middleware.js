@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const config = require("./config");
 const Comment = require("../models/comments");
 const Reply = require("../models/replies");
+const Posts = require("../models/posts");
 
 const errorHandler = (error, request, response, next) => {
     logger.error(error);
@@ -55,23 +56,35 @@ const userExtractor = async (request, response, next) => {
 };
 
 const communityExtractor = async (request, response, next) => {
-    const id = request.params.id;
+    const id = request.params.id || request.body.community;
     const community = await Community.findById(id);
-    if (
-        !community &&
-        community.createdBy.toString() !== request.user._id.toString()
-    ) {
+    if (!community) {
+        throw { name: "notFoundError" };
+    } else if (community.createdBy.toString() !== request.user._id.toString()) {
         throw { name: "unauthorizedAccessError" };
-    } else {
-        request.community = community;
     }
+    request.community = community;
+    next();
+};
+const postExtractor = async (request, response, next) => {
+    const id = request.params.id || request.body.post;
+    const post = await Posts.findById(id);
+    if (!post) {
+        throw { name: "notFoundError" };
+    } else if (post.user.toString() !== request.user._id.toString()) {
+        throw { name: "unauthorizedAccessError" };
+    }
+    request.post = post;
     next();
 };
 
 const commentExtracter = async (request, response, next) => {
     const id = request.params.id || request.body.comment;
     const comment = await Comment.findById(id);
-    if (!comment && comment.user.toString() !== request.user._id) {
+    console.log(comment);
+    if (!comment) {
+        throw { name: "notFoundError" };
+    } else if (comment.user.toString() !== request.user._id.toString()) {
         throw { name: "unauthorizedAccessError" };
     }
 
@@ -82,7 +95,7 @@ const commentExtracter = async (request, response, next) => {
 const replyExtractor = async (request, response, next) => {
     const id = request.params.id;
     const reply = await Reply.findById(id);
-    if (!reply && reply.user.toString() === request.user._id) {
+    if (!reply && reply.user.toString() === request.user._id.toString()) {
         throw { name: "unauthorizedAccessError" };
     }
     request.reply = reply;
@@ -95,6 +108,7 @@ module.exports = {
     tokenExtractor,
     userExtractor,
     communityExtractor,
+    postExtractor,
     commentExtracter,
     replyExtractor,
 };
