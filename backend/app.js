@@ -10,6 +10,7 @@ const userRouter = require("./controllers/userRouter");
 const loginRouter = require("./controllers/loginRouter");
 const communityRouter = require("./controllers/communityRouter");
 const commentRouter = require("./controllers/commentRouter");
+const replyRouter = require("./controllers/replyRouter");
 
 const cors = require("cors");
 const middleware = require("./utils/middleware");
@@ -38,7 +39,7 @@ app.use("/api/login", loginRouter);
 app.use("/api/posts", postsRouter);
 app.use("/api/sub", communityRouter);
 app.use("/api/comments", commentRouter);
-
+app.use("/api/comments/r", replyRouter);
 app.use(middleware.errorHandler);
 app.use(middleware.unknownEndPointHandler);
 module.exports = app;

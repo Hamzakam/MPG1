@@ -4,12 +4,14 @@ const Community = require("../models/communities");
 const jwt = require("jsonwebtoken");
 const config = require("./config");
 const Comment = require("../models/comments");
+const Reply = require("../models/replies");
+const Posts = require("../models/posts");
 
 const errorHandler = (error, request, response, next) => {
     logger.error(error);
     if (error.name === "CastError") {
         return response.status(400).json({ error: "malformatted id" });
-    } else if (error.name === "ValidationError") {
+    } else if (error.name === "ValidationError" || error.name === "TypeError") {
         return response.status(400).json({ error: error.message });
     } else if (error.name === "credentialError") {
         return response
@@ -53,26 +55,35 @@ const userExtractor = async (request, response, next) => {
     next();
 };
 
-const communityExtractor = async (request, response, next) => {
-    const id = request.params.id;
-    const community = await Community.findById(id);
-    if (
-        !community &&
-        community.createdBy.toString() !== request.user._id.toString()
-    ) {
+const extractor = async (request, model, modelName) => {
+    const id = request.params.id || request.body[modelName];
+    const objectOfModel = await model.findById(id);
+    console.log(id, objectOfModel);
+    if (!objectOfModel) {
+        throw { name: "notFoundError" };
+    } else if (objectOfModel.user.toString() !== request.user._id.toString()) {
+        console.log(objectOfModel);
         throw { name: "unauthorizedAccessError" };
-    } else {
-        request.community = community;
     }
+    return objectOfModel;
+};
+
+const communityExtractor = async (request, response, next) => {
+    request.community = await extractor(request, Community, "community");
+    next();
+};
+const postExtractor = async (request, response, next) => {
+    request.post = await extractor(request, Posts, "post");
     next();
 };
 
 const commentExtracter = async (request, response, next) => {
-    const id = request.params.id;
-    const comment = await Comment.findById(id);
-    if (!comment && comment.user.toString() !== request.user._id) {
-        throw { name: "unauthorizedAccessError" };
-    }
+    request.comment = await extractor(request, Comment, "comment");
+    next();
+};
+
+const replyExtractor = async (request, response, next) => {
+    request.reply = await extractor(request, Reply, "reply");
     next();
 };
 
@@ -82,5 +93,7 @@ module.exports = {
     tokenExtractor,
     userExtractor,
     communityExtractor,
+    postExtractor,
     commentExtracter,
+    replyExtractor,
 };
