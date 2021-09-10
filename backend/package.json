@@ -4,9 +4,10 @@
     "description": "Community based platform",
     "main": "index.js",
     "scripts": {
-        "start": "node index.js",
-        "dev": "nodemon index.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "start": "NODE_ENV=production node index.js",
+        "dev": "NODE_ENV=development nodemon index.js",
+        "lint": "eslint .",
+        "test": "NODE_ENV=test jest --verbose --runInBand"
     },
     "author": "Amit Ranjan,Ananya Tapi,Ashutosh Pandey,Hamza Kamal",
     "license": "MIT",
@@ -16,7 +17,6 @@
         "dotenv": "^10.0.0",
         "express": "^4.17.1",
         "express-async-errors": "^3.1.1",
-        "jest": "^27.1.0",
         "jsonwebtoken": "^8.5.1",
         "mongoose": "^6.0.2",
         "mongoose-unique-validator": "^2.0.3",
@@ -24,6 +24,11 @@
     },
     "devDependencies": {
         "eslint": "^7.32.0",
-        "nodemon": "^2.0.12"
+        "jest": "^27.1.1",
+        "nodemon": "^2.0.12",
+        "supertest": "^6.1.6"
+    },
+    "jest":{
+        "testEnvironment":"node"
     }
 }

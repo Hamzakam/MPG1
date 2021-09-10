@@ -28,7 +28,12 @@ mongoose
         useUnifiedTopology: true,
     })
     .then((result) => {
-        console.log("MongoDB connected with ", result.models);
+        console.log(
+            "MongoDB connected on Database",
+            result.connection.name,
+            "with models:",
+            result.models
+        );
     })
     .catch((error) => {
         console.log(error);
