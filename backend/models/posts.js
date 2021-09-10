@@ -36,6 +36,12 @@ const postsSchema = mongoose.Schema({
             ref: "Comment",
         },
     ],
+    upvoted_by: [
+        {
+            user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+            up: { type: Number, min: -1, max: 1 },
+        },
+    ],
 });
 
 postsSchema.plugin(uniqueValidator);

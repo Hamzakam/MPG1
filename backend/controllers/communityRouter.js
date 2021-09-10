@@ -9,7 +9,7 @@ communityRouter.post("/", userExtractor, async (request, response) => {
     const community = new Community({
         name: body.name,
         description: body.description,
-        createdBy: request.user._id,
+        user: request.user._id,
     });
     const communityObj = await community.save();
     response.status(201).json(communityObj);
@@ -26,13 +26,13 @@ communityRouter.put(
     communityExtractor,
     async (request, response) => {
         const id = request.params.id;
-        const communityUpdated = {
+        const community = {
             description: request.body.description,
             tag: request.body.tags,
         };
         const updatedCommunity = await Community.findByIdAndUpdate(
             id,
-            communityUpdated,
+            community,
             {
                 runValidators: true,
                 new: true,
