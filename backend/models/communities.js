@@ -30,7 +30,7 @@ const communitySchema = mongoose.Schema({
             type: String,
         },
     ],
-    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     posts: [
         {
             type: mongoose.Schema.Types.ObjectId,

@@ -24,6 +24,7 @@ replyRouter.post(
             content: body.content,
             post: post._id,
             user: request.user._id,
+            parent: request.comment._id,
         });
         const replyObj = await reply.save();
         request.comment.replies = request.comment.replies.concat(reply._id);
@@ -35,7 +36,6 @@ replyRouter.post(
 replyRouter.put(
     "/:id",
     userExtractor,
-    commentExtracter,
     replyExtractor,
     async (request, response) => {
         const replyUpdated = await Reply.findByIdAndUpdate(
@@ -53,7 +53,6 @@ replyRouter.put(
 replyRouter.delete(
     "/:id",
     userExtractor,
-    commentExtracter,
     replyExtractor,
     async (request, response) => {
         await Reply.findByIdAndDelete(request.params.id);
