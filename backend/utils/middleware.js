@@ -15,8 +15,10 @@ const errorHandler = (error, request, response, next) => {
         return response.status(400).json({ error: error.message });
     } else if (error.name === "credentialError") {
         return response
-            .status(401)
-            .json({ error: "Invalid password or username" });
+            .status(400)
+            .json({
+                error: error.message || "Invalid Credentials. Please Try again",
+            });
     } else if (error.name === "notFoundError") {
         return response.status(404).json({ error: "No Resource Error" });
     } else if (
