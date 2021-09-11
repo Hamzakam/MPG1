@@ -1,23 +1,63 @@
 const userList = [
     {
-        username: "Hamkam",
-        email: "anythingwillgoforemail",
-        password: "Nopassvalidationhaha",
+        username: "legituser",
+        email: "hamzadafirst@gmail.com",
+        password: "p@ssthisToo1",
     },
     {
-        username: "AangTL",
-        email: "Whatapassman",
-        password: "Iamgangstamaybe",
+        username: "fail",
+        email: "hamzadasecond@gmail.com",
+        password: "p@ssthisToo1",
     },
     {
-        username: "PandeyX",
-        email: "anthingwillgoforemail",
-        password: "Nopassvalidationhaha",
+        username: "failthistoo",
+        email: "hamzadasecond@gmail.com",
+        password: "Fa!2",
     },
     {
-        username: "AshuP",
-        email: "nythingwillgoforemail",
-        password: "Nopassvalidationhaha",
+        username: "failthisonetoo",
+        email: "hamzadafirst@gmail.com",
+        password: "p@ssthisToo1",
+    },
+    {
+        username: "legituser1",
+        email: "hamzadasecond@gmail.com",
+        password: "p@ssthisToo1",
+    },
+    {
+        username: "passtest1",
+        email: "hamzadasecond@gmail.com",
+        password: "Failthisto0",
+    },
+    {
+        username: "passtest2",
+        email: "hamzadasecond@gmail.com",
+        password: "F@ilthistoo",
+    },
+    {
+        username: "passtest3",
+        email: "hamzadasecond@gmail.com",
+        password: "f@ilthisto0",
+    },
+    {
+        username: "passtest4",
+        email: "hamzadasecond@gmail.com",
+        password: "F@ILTHISTO0",
+    },
+    {
+        username: "emailcheck1",
+        email: "notaemail.com",
+        password: "F@ILTHISTO0",
+    },
+    {
+        username: "emailcheck1",
+        email: "notaemail@com",
+        password: "F@ILTHISTO0",
+    },
+    {
+        username: "emailcheck1",
+        email: "nota.email@com",
+        password: "F@ILTHISTO0",
     },
 ];
 
