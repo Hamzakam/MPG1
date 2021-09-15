@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const helperLists = require("../utils/testDummyData");
 const User = require("../models/users");
-// const Posts = require("../models/posts");
 const Community = require("../models/communities");
 const supertest = require("supertest");
 const app = require("../app");

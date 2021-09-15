@@ -17,16 +17,16 @@ beforeAll(async () => {
     await User.deleteMany({});
     await Posts.deleteMany({});
     await Community.deleteMany({});
-    const savedUser = await userCreate(helperLists.userList[0]);
-    const communityWithUserId = helperLists.communityList
+    const users = await userCreate(helperLists.userList[0]);
+    const communityObjects = helperLists.communityList
         .slice(0, 4)
         .map((community) => {
             return {
                 ...community,
-                user: savedUser._id,
+                user: users._id,
             };
         });
-    await Community.insertMany(communityWithUserId);
+    await Community.insertMany(communityObjects);
 });
 
 describe("Check if getting all posts work", () => {
