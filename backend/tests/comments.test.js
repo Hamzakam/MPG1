@@ -18,6 +18,8 @@ beforeAll(async () => {
     await User.deleteMany({});
     await Posts.deleteMany({});
     await Community.deleteMany({});
+    await Comment.deleteMany({});
+
     const user = await userCreate(helperLists.userList[0]);
     const communityObjects = helperLists.communityList
         .slice(0, 4)
@@ -74,7 +76,7 @@ describe("Check if getting all comment work", () => {
     });
 });
 
-describe("Check if users make a comments", () => {
+describe("Check if user can make a comment", () => {
     beforeAll(async () => {
         await Comment.deleteMany({});
         const users = await usersInDb();
@@ -153,7 +155,7 @@ describe("Check if users make a comments", () => {
         expect(commentsAfter).toHaveLength(comments.length);
     });
 
-    test("check if non-logged in user can make a post", async () => {
+    test("check if non-logged in user can make a comment", async () => {
         const posts = await postsInDb();
         const commentObj = {
             content: "",
@@ -166,7 +168,7 @@ describe("Check if users make a comments", () => {
     });
 });
 
-describe("Check if update post works", () => {
+describe("Check if update comment works", () => {
     beforeAll(async () => {
         await Comment.deleteMany({});
         const users = await usersInDb();
@@ -210,12 +212,11 @@ describe("Check if update post works", () => {
             content: comments[0].content + "Something",
         };
 
-        const comment = await api
+        await api
             .put(`/api/comments/${comments[0]._id}`)
             .set("Authorization", `Bearer ${loggedInUser.body.token}`)
             .send(commentObj)
             .expect(401);
-        console.log(comment.body);
         await User.findByIdAndDelete(loggedInUser.body.id);
     });
     test("Check If validation is working(invalid content)", async () => {
