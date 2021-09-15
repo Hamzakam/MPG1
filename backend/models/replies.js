@@ -6,6 +6,7 @@ const replySchema = mongoose.Schema({
         type: String,
         required: true,
         minLength: 1,
+        maxLength: 100,
     },
     created_at: {
         type: Date,
