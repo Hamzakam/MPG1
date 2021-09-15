@@ -31,9 +31,7 @@ mongoose
     })
     .then((result) => {
         logger.info(
-            "MongoDB connected on Database",
-            result.connection.name,
-            "with models:",
+            `MongoDB connected on Database ${result.connection.name} with models:`,
             result.models
         );
     })
