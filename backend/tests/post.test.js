@@ -59,6 +59,19 @@ describe("Check if getting all posts work", () => {
 });
 
 describe("Check if user can make a post", () => {
+    beforeAll(async () => {
+        await Posts.deleteMany({});
+        const users = await usersInDb();
+        const communities = await communitiesInDb();
+        const postObjects = helperLists.postList.slice(3, 6).map((post) => {
+            return new Posts({
+                user: users[0]._id,
+                community: communities[0]._id,
+                ...post,
+            });
+        });
+        await Posts.insertMany(postObjects);
+    });
     test("check if logged in user can make a post", async () => {
         const { username, password } = helperLists.userList[0];
         const loggedInUser = await api
@@ -127,6 +140,140 @@ describe("Check if user can make a post", () => {
         await api.post("/api/posts").send(postObj).expect(401);
         const postsAfter = await postsInDb();
         expect(postsAfter).toHaveLength(posts.length);
+    });
+});
+
+describe("Check if update post works", () => {
+    beforeAll(async () => {
+        await Posts.deleteMany({});
+        const users = await usersInDb();
+        const communities = await communitiesInDb();
+        const postObjects = helperLists.postList.slice(0, 3).map((post) => {
+            return new Posts({
+                user: users[0]._id,
+                community: communities[0]._id,
+                ...post,
+            });
+        });
+        await Posts.insertMany(postObjects);
+    });
+    test("If user can update Post", async () => {
+        const { username, password } = helperLists.userList[0];
+        const loggedInUser = await api
+            .post("/api/login")
+            .send({ username, password });
+        const posts = await postsInDb();
+        const post = {
+            title: posts[0].title + "nothing",
+            content: posts[0].content + "Something",
+        };
+        const response = await api
+            .put(`/api/posts/${posts[0]._id}`)
+            .set("Authorization", `Bearer ${loggedInUser.body.token}`)
+            .send(post)
+            .expect(200)
+            .expect("Content-Type", /json/);
+        expect(response.body.content).toBe(posts[0].content + "Something");
+    });
+    test("If another user can update post", async () => {
+        await userCreate(helperLists.userList[1]);
+        const { username, password } = helperLists.userList[1];
+        const loggedInUser = await api
+            .post("/api/login")
+            .send({ username, password });
+        const posts = await postsInDb();
+        const post = {
+            title: posts[0].title + "nothing",
+            content: posts[0].content + "Something",
+        };
+        await api
+            .put(`/api/posts/${posts[0]._id}`)
+            .set("Authorization", `Bearer ${loggedInUser.body.token}`)
+            .send(post)
+            .expect(401);
+        await User.findByIdAndDelete(loggedInUser.body.id);
+    });
+    test("Check If validation is working(invalid title)", async () => {
+        const { username, password } = helperLists.userList[0];
+        const loggedInUser = await api
+            .post("/api/login")
+            .send({ username, password });
+        const posts = await postsInDb();
+        const post = {
+            title: "pos",
+            content: posts[0].content + "Something",
+        };
+        await api
+            .put(`/api/posts/${posts[0]._id}`)
+            .set("Authorization", `Bearer ${loggedInUser.body.token}`)
+            .send(post)
+            .expect(400);
+    });
+    test("Check If validation is working(invalid desc)", async () => {
+        const { username, password } = helperLists.userList[0];
+        const loggedInUser = await api
+            .post("/api/login")
+            .send({ username, password });
+        const posts = await postsInDb();
+        const post = {
+            title: posts[0].title + "nothing",
+            content: "maybe?",
+        };
+        await api
+            .put(`/api/posts/${posts[0]._id}`)
+            .set("Authorization", `Bearer ${loggedInUser.body.token}`)
+            .send(post)
+            .expect(400);
+    });
+});
+
+describe("Check if delete works", () => {
+    beforeAll(async () => {
+        await Posts.deleteMany({});
+        const users = await usersInDb();
+        const communities = await communitiesInDb();
+        const postObjects = helperLists.postList.slice(0, 3).map((post) => {
+            return new Posts({
+                user: users[0]._id,
+                community: communities[0]._id,
+                ...post,
+            });
+        });
+        await Posts.insertMany(postObjects);
+    });
+    test("If logged in user can delete post", async () => {
+        const { username, password } = helperLists.userList[0];
+        const loggedInUser = await api
+            .post("/api/login")
+            .send({ username, password });
+        const posts = await postsInDb();
+        await api
+            .delete(`/api/posts/${posts[0]._id}`)
+            .set("Authorization", `Bearer ${loggedInUser.body.token}`)
+            .expect(204);
+        const postsAfter = await postsInDb();
+        expect(postsAfter).toHaveLength(posts.length - 1);
+    });
+    test("if non logged in user can delete post", async () => {
+        const posts = await postsInDb();
+        await api.delete(`/api/posts/${posts[0]._id}`).expect(401);
+        const postsAfter = await postsInDb();
+        expect(postsAfter).toHaveLength(posts.length);
+    });
+    test("if logged in but different user can delete post", async () => {
+        await userCreate(helperLists.userList[1]);
+        const { username, password } = helperLists.userList[1];
+        const loggedInUser = await api
+            .post("/api/login")
+            .send({ username, password });
+        const posts = await postsInDb();
+        await api
+            .delete(`/api/posts/${posts[0]._id}`)
+            .set("Authorization", `Bearer ${loggedInUser.body.token}`)
+            .expect(401);
+        const postsAfter = await postsInDb();
+        expect(postsAfter).toHaveLength(posts.length);
+        await User.findByIdAndDelete(loggedInUser.body.id);
     });
 });
 
