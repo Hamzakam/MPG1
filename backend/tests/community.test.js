@@ -70,8 +70,8 @@ describe("Check if user can make a community", () => {
             .send(community)
             .expect(201)
             .expect("Content-Type", /json/);
-        const communitesAfter = await communitiesInDb();
-        expect(communitesAfter).toHaveLength(communities.length + 1);
+        const communitiesAfter = await communitiesInDb();
+        expect(communitiesAfter).toHaveLength(communities.length + 1);
     });
     test("can't create make a community with less than three words in title", async () => {
         const { username, password } = helperLists.userList[0];
@@ -88,10 +88,10 @@ describe("Check if user can make a community", () => {
             .send(community)
             .expect(400)
             .expect("Content-Type", /json/);
-        const communitesAfter = await communitiesInDb();
-        expect(communitesAfter).toHaveLength(communities.length);
+        const communitiesAfter = await communitiesInDb();
+        expect(communitiesAfter).toHaveLength(communities.length);
     });
-    test("create make a community with a description too small", async () => {
+    test("check if validation is working(small desc)", async () => {
         const { username, password } = helperLists.userList[0];
         const loggedInUser = await api
             .post("/api/login")
@@ -108,8 +108,8 @@ describe("Check if user can make a community", () => {
             .send(community)
             .expect(400)
             .expect("Content-Type", /json/);
-        const communitesAfter = await communitiesInDb();
-        expect(communitesAfter).toHaveLength(communities.length);
+        const communitiesAfter = await communitiesInDb();
+        expect(communitiesAfter).toHaveLength(communities.length);
     });
 });
 
@@ -140,7 +140,7 @@ describe("Check if update community works", () => {
             .put(`/api/sub/${communities[0]._id}`)
             .set("Authorization", `Bearer ${loggedInUser.body.token}`)
             .send(community)
-            .expect(201)
+            .expect(200)
             .expect("Content-Type", /json/);
         expect(response.body.description).toBe(
             communities[0].description + "Something"
@@ -162,7 +162,7 @@ describe("Check if update community works", () => {
             .send(community)
             .expect(401);
     });
-    test("Check If validation is working", async () => {
+    test("Check If validation is working(too small desc)", async () => {
         const { username, password } = helperLists.userList[0];
         const loggedInUser = await api
             .post("/api/login")
@@ -202,14 +202,14 @@ describe("Check if delete community works", () => {
             .delete(`/api/sub/${communities[0]._id}`)
             .set("Authorization", `Bearer ${loggedInUser.body.token}`)
             .expect(204);
-        const communitesAfter = await communitiesInDb();
-        expect(communitesAfter).toHaveLength(communities.length - 1);
+        const communitiesAfter = await communitiesInDb();
+        expect(communitiesAfter).toHaveLength(communities.length - 1);
     });
     test("if non logged in user can delete community", async () => {
         const communities = await communitiesInDb();
         await api.delete(`/api/sub/${communities[0]._id}`).expect(401);
-        const communitesAfter = await communitiesInDb();
-        expect(communitesAfter).toHaveLength(communities.length);
+        const communitiesAfter = await communitiesInDb();
+        expect(communitiesAfter).toHaveLength(communities.length);
     });
     test("if logged in but different user can delete community", async () => {
         await userCreate(helperLists.userList[2]);
@@ -222,8 +222,8 @@ describe("Check if delete community works", () => {
             .delete(`/api/sub/${communities[0]._id}`)
             .set("Authorization", `Bearer ${loggedInUser.body.token}`)
             .expect(401);
-        const communitesAfter = await communitiesInDb();
-        expect(communitesAfter).toHaveLength(communities.length);
+        const communitiesAfter = await communitiesInDb();
+        expect(communitiesAfter).toHaveLength(communities.length);
     });
 });
 afterAll(async () => {
