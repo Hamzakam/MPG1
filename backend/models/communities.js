@@ -8,6 +8,7 @@ const communitySchema = mongoose.Schema({
         type: String,
         required: true,
         minLength: 4,
+        maxLength: 40,
         unique: true,
     },
     description: {
