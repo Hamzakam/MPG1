@@ -21,7 +21,7 @@ const errorHandler = (error, request, response, next) => {
         return response.status(404).json({ error: "No Resource Error" });
     } else if (
         error.name === "unauthorizedAccessError" ||
-        error.name === "jsonWebTokenError"
+        error.name.toLowerCase() === "jsonwebtokenerror"
     ) {
         return response
             .status(401)
