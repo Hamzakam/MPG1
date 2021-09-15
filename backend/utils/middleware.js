@@ -14,11 +14,9 @@ const errorHandler = (error, request, response, next) => {
     } else if (error.name === "ValidationError" || error.name === "TypeError") {
         return response.status(400).json({ error: error.message });
     } else if (error.name === "credentialError") {
-        return response
-            .status(400)
-            .json({
-                error: error.message || "Invalid Credentials. Please Try again",
-            });
+        return response.status(400).json({
+            error: error.message || "Invalid Credentials. Please Try again",
+        });
     } else if (error.name === "notFoundError") {
         return response.status(404).json({ error: "No Resource Error" });
     } else if (
@@ -60,11 +58,12 @@ const userExtractor = async (request, response, next) => {
 const extractor = async (request, model, modelName) => {
     const id = request.params.id || request.body[modelName];
     const objectOfModel = await model.findById(id);
-    console.log(id, objectOfModel);
     if (!objectOfModel) {
         throw { name: "notFoundError" };
-    } else if (objectOfModel.user.toString() !== request.user._id.toString()) {
-        console.log(objectOfModel);
+    } else if (
+        request.method !== "POST" &&
+        objectOfModel.user.toString() !== request.user._id.toString()
+    ) {
         throw { name: "unauthorizedAccessError" };
     }
     return objectOfModel;
