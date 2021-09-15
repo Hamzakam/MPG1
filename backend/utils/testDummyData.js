@@ -1,7 +1,17 @@
 const userList = [
     {
         username: "legituser",
+        email: "mail.hamzakam@gmail.com",
+        password: "p@ssthisToo1",
+    },
+    {
+        username: "legituser2",
         email: "hamzadafirst@gmail.com",
+        password: "p@ssthisToo1",
+    },
+    {
+        username: "legituser3",
+        email: "hamzadasecond@gmail.com",
         password: "p@ssthisToo1",
     },
     {
@@ -16,7 +26,7 @@ const userList = [
     },
     {
         username: "failthisonetoo",
-        email: "hamzadafirst@gmail.com",
+        email: "mail.hamzakam@gmail.com",
         password: "p@ssthisToo1",
     },
     {
@@ -47,17 +57,17 @@ const userList = [
     {
         username: "emailcheck1",
         email: "notaemail.com",
-        password: "F@ILTHISTO0",
+        password: "F@ILTHiSTO0",
     },
     {
         username: "emailcheck1",
         email: "notaemail@com",
-        password: "F@ILTHISTO0",
+        password: "F@ILThISTO0",
     },
     {
         username: "emailcheck1",
         email: "nota.email@com",
-        password: "F@ILTHISTO0",
+        password: "F@IlTHISTO0",
     },
 ];
 
@@ -111,6 +121,14 @@ const communityList = [
     {
         name: "News",
         description: "Everything latest goes on here. Happy Sporting!",
+    },
+    {
+        name: "talkig",
+        description: "Everything talkig goes on here. Happy talkig",
+    },
+    {
+        name: "tal",
+        description: "Everything mal goes on here. Happy malininiginig",
     },
 ];
 
