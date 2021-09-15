@@ -45,7 +45,7 @@ communityRouter.put(
                 new: true,
             }
         );
-        response.status(201).json(updatedCommunity);
+        response.status(200).json(updatedCommunity);
     }
 );
 

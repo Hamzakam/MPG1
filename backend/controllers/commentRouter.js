@@ -46,7 +46,7 @@ commentRouter.put(
                 new: true,
             }
         );
-        response.status(201).json(commentUpdated);
+        response.status(200).json(commentUpdated);
     }
 );
 
