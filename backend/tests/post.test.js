@@ -5,45 +5,129 @@ const Posts = require("../models/posts");
 const Community = require("../models/communities");
 const supertest = require("supertest");
 const app = require("../app");
-const { passwordEncrypt, postsInDb } = require("../utils/testhelper");
+const {
+    userCreate,
+    postsInDb,
+    usersInDb,
+    communitiesInDb,
+} = require("../utils/testhelper");
 const api = supertest(app);
 
-beforeEach(async () => {
+beforeAll(async () => {
     await User.deleteMany({});
     await Posts.deleteMany({});
     await Community.deleteMany({});
-    const passwordHash = await passwordEncrypt(
-        helperLists.userList[0].password
-    );
-    const user = new User({
-        ...helperLists.userList[0],
-        passwordHash,
-    });
-    await user.save();
+    const savedUser = await userCreate(helperLists.userList[0]);
+    const communityWithUserId = helperLists.communityList
+        .slice(0, 4)
+        .map((community) => {
+            return {
+                ...community,
+                user: savedUser._id,
+            };
+        });
+    await Community.insertMany(communityWithUserId);
 });
 
 describe("Check if getting all posts work", () => {
+    beforeAll(async () => {
+        const users = await usersInDb();
+        const communities = await communitiesInDb();
+        const postObjects = helperLists.postList.slice(0, 3).map((post) => {
+            return new Posts({
+                user: users[0]._id,
+                community: communities[0]._id,
+                ...post,
+            });
+        });
+        await Posts.insertMany(postObjects);
+    });
     test("check if you can get post and status code is 200", async () => {
-        api.get("/api/posts").expect(200).expect("Content-Type", /json/);
+        await api.get("/api/posts").expect(200).expect("Content-Type", /json/);
     });
     test("check if get by id is working", async () => {
         const posts = await postsInDb();
-        api.get(`/api/posts/${posts[0]._id}`)
+        await api
+            .get(`/api/posts/${posts[0]._id}`)
             .expect(200)
             .expect("Content-Type", /json/);
     });
     test("Check if get by invalid id gives malformatted id", async () => {
         const invalidId = "abcdefghijklomen";
-        api.get(`/api/posts/${invalidId}`).expect(400);
+        await api.get(`/api/posts/${invalidId}`).expect(400);
     });
 });
 
 describe("Check if user can make a post", () => {
-    // test("check if non-logged in user can make a post", async () => {
-    //     const loggedInUser = await api
-    //         .post("/api/posts")
-    //         .send(helperLists.userList[0]);
-    // });
+    test("check if logged in user can make a post", async () => {
+        const { username, password } = helperLists.userList[0];
+        const loggedInUser = await api
+            .post("/api/login")
+            .send({ username, password });
+        const communities = await communitiesInDb();
+        const postObj = {
+            ...helperLists.postList[0],
+            community: communities[0]._id,
+        };
+        const posts = await postsInDb();
+        await api
+            .post("/api/posts")
+            .set("Authorization", `Bearer ${loggedInUser.body.token}`)
+            .send(postObj)
+            .expect(201)
+            .expect("Content-Type", /json/);
+        const postsAfter = await postsInDb();
+        expect(postsAfter).toHaveLength(posts.length + 1);
+    });
+    test("if post validation is working(invalid title)", async () => {
+        const { username, password } = helperLists.userList[0];
+        const loggedInUser = await api
+            .post("/api/login")
+            .send({ username, password });
+        const communities = await communitiesInDb();
+        const postObj = {
+            title: "fail",
+            content: "This might pass. ig. idk fs tho",
+            community: communities[0]._id,
+        };
+        const posts = await postsInDb();
+        await api
+            .post("/api/posts")
+            .set("Authorization", `Bearer ${loggedInUser.body.token}`)
+            .send(postObj)
+            .expect(400);
+        const postsAfter = await postsInDb();
+        expect(postsAfter).toHaveLength(posts.length);
+    });
+    test("if post validation is working(invalid content)", async () => {
+        const { username, password } = helperLists.userList[0];
+        const loggedInUser = await api
+            .post("/api/login")
+            .send({ username, password });
+        const communities = await communitiesInDb();
+        const postObj = {
+            title: "failthis",
+            content: "Thi",
+            community: communities[0]._id,
+        };
+        const posts = await postsInDb();
+        await api
+            .post("/api/posts")
+            .set("Authorization", `Bearer ${loggedInUser.body.token}`)
+            .send(postObj)
+            .expect(400);
+        const postsAfter = await postsInDb();
+        expect(postsAfter).toHaveLength(posts.length);
+    });
+    test("check if non-logged in user can make a post", async () => {
+        const postObj = {
+            ...helperLists.postList[0],
+        };
+        const posts = await postsInDb();
+        await api.post("/api/posts").send(postObj).expect(401);
+        const postsAfter = await postsInDb();
+        expect(postsAfter).toHaveLength(posts.length);
+    });
 });
 
 afterAll(() => {
