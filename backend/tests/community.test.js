@@ -161,6 +161,7 @@ describe("Check if update community works", () => {
             .set("Authorization", `Bearer ${loggedInUser.body.token}`)
             .send(community)
             .expect(401);
+        await User.findByIdAndDelete(loggedInUser.body.id);
     });
     test("Check If validation is working(too small desc)", async () => {
         const { username, password } = helperLists.userList[0];
@@ -212,11 +213,12 @@ describe("Check if delete community works", () => {
         expect(communitiesAfter).toHaveLength(communities.length);
     });
     test("if logged in but different user can delete community", async () => {
-        await userCreate(helperLists.userList[2]);
+        await userCreate(helperLists.userList[1]);
         const { username, password } = helperLists.userList[1];
         const loggedInUser = await api
             .post("/api/login")
             .send({ username, password });
+        console.log(loggedInUser.body);
         const communities = await communitiesInDb();
         await api
             .delete(`/api/sub/${communities[0]._id}`)
