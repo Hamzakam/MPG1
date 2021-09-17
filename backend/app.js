@@ -17,6 +17,8 @@ const middleware = require("./utils/middleware");
 const config = require("./utils/config");
 const morgan = require("morgan");
 
+const logger = require("./utils/logger");
+
 app.use(cors());
 app.use(express.json());
 app.use(
@@ -28,10 +30,13 @@ mongoose
         useUnifiedTopology: true,
     })
     .then((result) => {
-        console.log("MongoDB connected with ", result.models);
+        logger.info(
+            `MongoDB connected on Database ${result.connection.name} with models:`,
+            result.models
+        );
     })
     .catch((error) => {
-        console.log(error);
+        logger.error(error);
     });
 app.use(middleware.tokenExtractor);
 app.use("/api/users", userRouter);
