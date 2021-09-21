@@ -12,7 +12,7 @@
     "author": "Amit Ranjan,Ananya Tapi,Ashutosh Pandey,Hamza Kamal",
     "license": "MIT",
     "dependencies": {
-        "@maxdietrich/deep-email-validator": "github:maxdietrich/deep-email-validator",
+        "@Hamzakam/deep-email-validator": "github:Hamzakam/deep-email-validator",
         "bcrypt": "^5.0.1",
         "cors": "^2.8.5",
         "dotenv": "^10.0.0",
