@@ -1,7 +1,7 @@
 const User = require("../models/users");
 const userRouter = require("express").Router();
 const bcrypt = require("bcrypt");
-const emailValidator = require("@maxdietrich/deep-email-validator");
+const emailValidator = require("@Hamzakam/deep-email-validator");
 const passwordValidator = require("password-validator");
 
 const passSchema = new passwordValidator();
