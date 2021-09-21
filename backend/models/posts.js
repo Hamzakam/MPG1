@@ -8,11 +8,13 @@ const postsSchema = mongoose.Schema({
         type: String,
         required: true,
         minLength: 5,
+        maxLength: 50,
     },
     content: {
         type: String,
         required: true,
         minLength: 10,
+        maxLength: 300,
     },
     upvotes: {
         type: Number,

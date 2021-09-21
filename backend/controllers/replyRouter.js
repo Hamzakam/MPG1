@@ -46,7 +46,7 @@ replyRouter.put(
                 new: true,
             }
         );
-        response.status(201).json(replyUpdated);
+        response.status(200).json(replyUpdated);
     }
 );
 

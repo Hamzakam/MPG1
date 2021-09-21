@@ -14,12 +14,16 @@ postsRouter.get("/", async (request, response) => {
     const posts = await Posts.find({}).populate("comments", {
         content: 1,
     });
-    response.json(posts);
+    response.status(200).json(posts);
 });
 
 postsRouter.get("/:id", async (request, response) => {
-    const post = await Posts.findById(request.params.id);
-    response.json(post);
+    const id = request.params.id;
+    const post = await Posts.findById(id);
+    if (!post) {
+        throw { name: "notFoundError" };
+    }
+    response.status(200).json(post);
 });
 
 postsRouter.post(
