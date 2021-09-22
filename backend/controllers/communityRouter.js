@@ -9,7 +9,7 @@ communityRouter.post("/", userExtractor, async (request, response) => {
     const community = new Community({
         name: body.name,
         description: body.description,
-        createdBy: request.user._id,
+        user: request.user._id,
     });
     const communityObj = await community.save();
     response.status(201).json(communityObj);
@@ -19,7 +19,14 @@ communityRouter.get("/", async (request, response) => {
     const communities = await Community.find({});
     response.status(200).json(communities);
 });
-
+communityRouter.get("/:id", async (request, response) => {
+    const id = request.params.id;
+    const community = await Community.findById(id);
+    if (!community) {
+        throw { name: "notFoundError" };
+    }
+    response.status(200).json(community);
+});
 communityRouter.put(
     "/:id",
     userExtractor,
@@ -38,7 +45,7 @@ communityRouter.put(
                 new: true,
             }
         );
-        response.status(201).json(updatedCommunity);
+        response.status(200).json(updatedCommunity);
     }
 );
 

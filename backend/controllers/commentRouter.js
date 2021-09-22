@@ -32,6 +32,10 @@ commentRouter.get("/", async (request, response) => {
     });
     response.status(200).json(comments);
 });
+commentRouter.get("/:id", async (request, response) => {
+    const comment = await Comment.findById(request.params.id);
+    response.status(200).json(comment);
+});
 
 commentRouter.put(
     "/:id",
@@ -46,7 +50,7 @@ commentRouter.put(
                 new: true,
             }
         );
-        response.status(201).json(commentUpdated);
+        response.status(200).json(commentUpdated);
     }
 );
 

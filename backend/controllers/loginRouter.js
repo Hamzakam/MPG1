@@ -11,7 +11,7 @@ loginRouter.post("/", async (request, response) => {
     const isPassCorrect = !user
         ? null
         : await bcrypt.compare(body.password, user.passwordHash);
-    if (!isPassCorrect && user) {
+    if (!isPassCorrect || !user) {
         throw { name: "credentialError" };
     }
     const token = jwt.sign(
@@ -20,7 +20,7 @@ loginRouter.post("/", async (request, response) => {
             id: user._id,
         },
         config.SECRET,
-        { expiresIn: 3600 }
+        { expiresIn: 21600 }
     );
     response.status(200).send({ token, username: user.username, id: user._id });
 });

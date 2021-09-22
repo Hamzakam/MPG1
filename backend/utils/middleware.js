@@ -11,21 +11,23 @@ const errorHandler = (error, request, response, next) => {
     logger.error(error);
     if (error.name === "CastError") {
         return response.status(400).json({ error: "malformatted id" });
-    } else if (error.name === "ValidationError") {
+    } else if (error.name === "ValidationError" || error.name === "TypeError") {
         return response.status(400).json({ error: error.message });
     } else if (error.name === "credentialError") {
-        return response
-            .status(401)
-            .json({ error: "Invalid password or username" });
+        return response.status(400).json({
+            error: error.message || "Invalid Credentials. Please Try again",
+        });
     } else if (error.name === "notFoundError") {
         return response.status(404).json({ error: "No Resource Error" });
     } else if (
         error.name === "unauthorizedAccessError" ||
-        error.name === "jsonWebTokenError"
+        error.name.toLowerCase() === "jsonwebtokenerror"
     ) {
         return response
             .status(401)
             .json({ error: "Access to resource denied" });
+    } else if (error.name === "TokenExpiredError") {
+        return response.status(401).json({ error: error.message });
     }
     next(error);
 };
@@ -55,50 +57,36 @@ const userExtractor = async (request, response, next) => {
     next();
 };
 
-const communityExtractor = async (request, response, next) => {
-    const id = request.params.id || request.body.community;
-    const community = await Community.findById(id);
-    if (!community) {
+const extractor = async (request, model, modelName) => {
+    const id = request.params.id || request.body[modelName];
+    const objectOfModel = await model.findById(id);
+    if (!objectOfModel) {
         throw { name: "notFoundError" };
-    } else if (community.createdBy.toString() !== request.user._id.toString()) {
+    } else if (
+        request.method !== "POST" &&
+        objectOfModel.user.toString() !== request.user._id.toString()
+    ) {
         throw { name: "unauthorizedAccessError" };
     }
-    request.community = community;
+    return objectOfModel;
+};
+
+const communityExtractor = async (request, response, next) => {
+    request.community = await extractor(request, Community, "community");
     next();
 };
 const postExtractor = async (request, response, next) => {
-    const id = request.params.id || request.body.post;
-    const post = await Posts.findById(id);
-    if (!post) {
-        throw { name: "notFoundError" };
-    } else if (post.user.toString() !== request.user._id.toString()) {
-        throw { name: "unauthorizedAccessError" };
-    }
-    request.post = post;
+    request.post = await extractor(request, Posts, "post");
     next();
 };
 
 const commentExtracter = async (request, response, next) => {
-    const id = request.params.id || request.body.comment;
-    const comment = await Comment.findById(id);
-    console.log(comment);
-    if (!comment) {
-        throw { name: "notFoundError" };
-    } else if (comment.user.toString() !== request.user._id.toString()) {
-        throw { name: "unauthorizedAccessError" };
-    }
-
-    request.comment = comment;
+    request.comment = await extractor(request, Comment, "comment");
     next();
 };
 
 const replyExtractor = async (request, response, next) => {
-    const id = request.params.id;
-    const reply = await Reply.findById(id);
-    if (!reply && reply.user.toString() === request.user._id.toString()) {
-        throw { name: "unauthorizedAccessError" };
-    }
-    request.reply = reply;
+    request.reply = await extractor(request, Reply, "reply");
     next();
 };
 
