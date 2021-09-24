@@ -13,9 +13,7 @@ const Post = (props) => {
 const PostFeed = () => {
     const [posts, setPosts] = useState([]);
     useEffect(() => {
-        axios
-            .get("http://localhost:3000/api/posts")
-            .then((res) => setPosts(res.data));
+        axios.get("/api/posts").then((res) => setPosts(res.data));
     }, []);
     return (
         <div className="Posts">
@@ -29,3 +27,5 @@ const PostFeed = () => {
         </div>
     );
 };
+
+export default PostFeed;
