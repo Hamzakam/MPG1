@@ -1,7 +1,6 @@
 import "./App.css";
 // import { useState, useEffect } from "react";
-import LoginForm from "./Components/LoginForm";
-import RegisterForm from "./Components/RegisterForm";
+import Login from "./Components/Login/Login";
 import PostFeed from "./Components/Post";
 
 const App = () => {
@@ -9,8 +8,7 @@ const App = () => {
         <div className="App">
             <h1>PeerHub</h1>
             <PostFeed />
-            <LoginForm />
-            <RegisterForm />
+            <Login />
         </div>
     );
 };

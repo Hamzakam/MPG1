@@ -6,7 +6,9 @@ const login = async (credentials) => {
         if (response.status === 401 || response.status === 404) {
             throw response.body.error;
         }
-        console.log(response.data);
+        if (response.data.token) {
+            localStorage.setItem("user", JSON.stringify(response.data.token));
+        }
         return response.data;
     } catch (Exception) {
         //TODO: Add a notification or something like that.
@@ -27,4 +29,8 @@ const register = async (credentials) => {
     }
 };
 
-export { login, register };
+const logout = () => {
+    localStorage.removeItem("user");
+};
+
+export { login, register, logout };
