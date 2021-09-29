@@ -36,6 +36,7 @@ communityRouter.put(
         const community = {
             description: request.body.description,
             tag: request.body.tags,
+            updated_at: Date.now(),
         };
         const updatedCommunity = await Community.findByIdAndUpdate(
             id,
