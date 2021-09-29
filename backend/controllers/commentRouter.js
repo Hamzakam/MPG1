@@ -44,7 +44,7 @@ commentRouter.put(
     async (request, response) => {
         const commentUpdated = await Comment.findByIdAndUpdate(
             request.params.id,
-            { content: request.body.content },
+            { content: request.body.content, updated_at: Date.now() },
             {
                 runValidators: true,
                 new: true,

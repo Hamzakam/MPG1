@@ -2,6 +2,7 @@
 //using express-async-errors as wrapper for throwing/catching/passing errors.
 
 const Posts = require("../models/posts");
+const Views = require("../models/view");
 const postsRouter = require("express").Router();
 const {
     userExtractor,
@@ -31,14 +32,19 @@ postsRouter.post(
     userExtractor,
     communityExtractor,
     async (request, response) => {
+        const viewObject = new Views();
+        const savedView = await viewObject.save();
         const postsObject = new Posts({
             title: request.body.title,
             content: request.body.content,
             tags: request.body.tags,
             user: request.user._id,
             community: request.community._id,
+            views: savedView._id,
         });
+
         const savedPost = await postsObject.save();
+
         request.user.posts = request.user.posts.concat(savedPost._id);
         request.community.posts = request.community.posts.concat(savedPost._id);
         await request.user.save();
@@ -52,14 +58,14 @@ postsRouter.put(
     userExtractor,
     postExtractor,
     async (request, response) => {
-        const posts = {
-            title: request.body.title,
-            content: request.body.content,
-            tags: request.body.tags,
-        };
         const postUpdated = await Posts.findByIdAndUpdate(
             request.params.id,
-            posts,
+            {
+                title: request.body.title,
+                content: request.body.content,
+                tags: request.body.tags,
+                updated_at: Date.now(),
+            },
             {
                 runValidators: true,
                 new: true,
@@ -70,8 +76,9 @@ postsRouter.put(
 );
 
 postsRouter.post("/up", userExtractor, async (request, response) => {
-    const id = request.body.post;
+    const id = request.body.pos;
     const post = await Posts.findById(id);
+    console.log(post);
     if (!post) {
         throw { name: "notFoundError" };
     }
@@ -90,6 +97,34 @@ postsRouter.post("/up", userExtractor, async (request, response) => {
     post.upvotes += request.body.up;
     const postUpdated = await post.save();
     response.status(200).json({ upvotes: postUpdated.upvotes });
+});
+
+postsRouter.post("/view", userExtractor, async (request, response) => {
+    const id = request.body.post;
+    const post = await Posts.findById(id);
+    if (!post) {
+        throw { name: "notFoundError" };
+    }
+    const views = await Views.findById(post.views);
+    // console.log("Views:", views);
+
+    const hadSeen = views.users.findIndex((user) => {
+        // console.log(user.userid.toString());
+        return user.userid.toString() === request.user._id.toString();
+    });
+
+    if (hadSeen === -1) {
+        views.users = views.users.concat({
+            userid: request.user._id,
+        });
+    } else {
+        views.users[hadSeen] = {
+            ...views.users[hadSeen]._doc,
+            last_viewed: Date.now(),
+        };
+    }
+    await views.save();
+    response.status(200).end();
 });
 
 postsRouter.delete(
