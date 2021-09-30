@@ -76,7 +76,7 @@ postsRouter.put(
 );
 
 postsRouter.post("/up", userExtractor, async (request, response) => {
-    const id = request.body.pos;
+    const id = request.body.post;
     const post = await Posts.findById(id);
     console.log(post);
     if (!post) {
