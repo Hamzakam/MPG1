@@ -1,4 +1,4 @@
-//Defining schema for Posts.
+//Defining schema for Community.
 
 const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
@@ -24,7 +24,12 @@ const communitySchema = mongoose.Schema({
     created_at: {
         type: Date,
         default: Date.now,
-        required: "Must have the date when the post is created",
+        required: "Must have the date when the community is created",
+    },
+    updated_at: {
+        type: Date,
+        default: Date.now,
+        required: "Must have the date when the community is updated",
     },
     tags: [
         {
