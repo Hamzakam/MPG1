@@ -1,5 +1,5 @@
 const User = require("../models/users");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const Posts = require("../models/posts");
 const Community = require("../models/communities");
 const Comment = require("../models/comments");

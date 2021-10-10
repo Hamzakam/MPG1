@@ -25,9 +25,15 @@ const postsSchema = mongoose.Schema({
         default: Date.now,
         required: "Must have the date when the post is created",
     },
+    updated_at: {
+        type: Date,
+        default: Date.now,
+        required: "Must have the date when the post is updated",
+    },
     tags: [
         {
             type: String,
+            maxLength: 30,
         },
     ],
     community: { type: mongoose.Schema.Types.ObjectId, ref: "Community" },
@@ -44,6 +50,7 @@ const postsSchema = mongoose.Schema({
             up: { type: Number, min: -1, max: 1 },
         },
     ],
+    views: { type: mongoose.Schema.Types.ObjectId, ref: "Views" },
 });
 
 postsSchema.plugin(uniqueValidator);
@@ -52,6 +59,7 @@ postsSchema.set("toJSON", {
         returnedObject.id = returnedObject._id.toString();
         delete returnedObject._id;
         delete returnedObject.__v;
+        delete returnedObject.views;
     },
 });
 

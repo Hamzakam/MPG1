@@ -40,7 +40,7 @@ replyRouter.put(
     async (request, response) => {
         const replyUpdated = await Reply.findByIdAndUpdate(
             request.params.id,
-            { content: request.body.content },
+            { content: request.body.content, updated_at: Date.now() },
             {
                 runValidators: true,
                 new: true,
