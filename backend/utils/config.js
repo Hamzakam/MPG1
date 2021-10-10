@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const mongoURI = (environment) => {
-    if (environment === "production") {
+    if (environment === "prod") {
         return process.env.MONGODB_URI;
     } else if (environment === "test") {
         return process.env.TEST_MONGODB_URI;

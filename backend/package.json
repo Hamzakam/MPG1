@@ -4,16 +4,16 @@
     "description": "Community based platform",
     "main": "index.js",
     "scripts": {
-        "start": "NODE_ENV=production node index.js",
-        "dev": "NODE_ENV=development nodemon index.js",
+        "start": "cross-env NODE_ENV=prod node index.js",
+        "dev": "cross-env NODE_ENV=development nodemon index.js",
         "lint": "eslint .",
-        "test": "NODE_ENV=test jest --verbose --runInBand"
+        "test": "cross-env NODE_ENV=test jest --verbose --runInBand"
     },
     "author": "Amit Ranjan,Ananya Tapi,Ashutosh Pandey,Hamza Kamal",
     "license": "MIT",
     "dependencies": {
         "@Hamzakam/deep-email-validator": "github:Hamzakam/deep-email-validator",
-        "bcrypt": "^5.0.1",
+        "bcryptjs": "^2.4.3",
         "cors": "^2.8.5",
         "dotenv": "^10.0.0",
         "express": "^4.17.1",
@@ -25,6 +25,7 @@
         "password-validator": "^5.1.1"
     },
     "devDependencies": {
+        "cross-env": "^7.0.3",
         "eslint": "^7.32.0",
         "jest": "^27.1.1",
         "nodemon": "^2.0.12",
