@@ -16,9 +16,33 @@ communityRouter.post("/", userExtractor, async (request, response) => {
 });
 
 communityRouter.get("/", async (request, response) => {
-    const communities = await Community.find({});
+    const communities = request.query.name
+        ? await Community.findOne({ name: request.query.name })
+        : await Community.find({});
+    if (!communities) {
+        throw { name: "notFoundError" };
+    }
     response.status(200).json(communities);
 });
+
+communityRouter.get("/search", async (request, response) => {
+    const searchInput = request.body.input;
+    const searchReg = new RegExp(searchInput, "i");
+    const communities = await Community.find({
+        $or: [
+            { name: searchReg },
+
+            {
+                $text: { $search: searchInput },
+            },
+        ],
+    });
+    if (!communities) {
+        throw { name: "notFoundError" };
+    }
+    response.status(200).send(communities);
+});
+
 communityRouter.get("/:id", async (request, response) => {
     const id = request.params.id;
     const community = await Community.findById(id);
