@@ -47,7 +47,7 @@ const communitySchema = mongoose.Schema({
 });
 
 communitySchema.plugin(uniqueValidator);
-
+communitySchema.index({ name: "text" });
 communitySchema.set("toJSON", {
     transform: (document, returnedObject) => {
         returnedObject.id = returnedObject._id.toString();
