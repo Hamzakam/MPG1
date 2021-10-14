@@ -9,25 +9,23 @@ const Posts = require("../models/posts");
 
 const errorHandler = (error, request, response, next) => {
     logger.error(error);
-    if (error.name === "CastError") {
-        return response.status(400).json({ error: "malformatted id" });
-    } else if (error.name === "ValidationError" || error.name === "TypeError") {
-        return response.status(400).json({ error: error.message });
-    } else if (error.name === "credentialError") {
-        return response.status(400).json({
-            error: error.message || "Invalid Credentials. Please Try again",
-        });
-    } else if (error.name === "notFoundError") {
-        return response.status(404).json({ error: "No Resource Error" });
-    } else if (
-        error.name === "unauthorizedAccessError" ||
-        error.name.toLowerCase() === "jsonwebtokenerror"
-    ) {
-        return response
-            .status(401)
-            .json({ error: "Access to resource denied" });
-    } else if (error.name === "TokenExpiredError") {
-        return response.status(401).json({ error: error.message });
+    switch (error.name) {
+        case "CastError":
+            return response.status(400).json({ error: "malformatted id" });
+        case ("ValidationError", "TypeError"):
+            return response.status(400).json({ error: error.message });
+        case "credentialError":
+            return response.status(400).json({
+                error: error.message || "Invalid Credentials. Please Try again",
+            });
+        case "notFoundError":
+            return response.status(404).json({ error: "No Resource Error" });
+        case ("unauthorizedAccessError", "jsonwebtokenerror"):
+            return response
+                .status(401)
+                .json({ error: "Access to resource denied" });
+        case "TokenExpiredError":
+            return response.status(401).json({ error: error.message });
     }
     next(error);
 };
