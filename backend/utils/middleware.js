@@ -11,8 +11,8 @@ const errorHandler = (error, request, response, next) => {
     logger.error(error);
     switch (error.name) {
         case "CastError":
-            return response.status(400).json({ error: "malformatted id" });
-        case ("ValidationError", "TypeError"):
+        case "ValidationError":
+        case "TypeError":
             return response.status(400).json({ error: error.message });
         case "credentialError":
             return response.status(400).json({
@@ -20,12 +20,12 @@ const errorHandler = (error, request, response, next) => {
             });
         case "notFoundError":
             return response.status(404).json({ error: "No Resource Error" });
-        case ("unauthorizedAccessError", "jsonwebtokenerror"):
-            return response
-                .status(401)
-                .json({ error: "Access to resource denied" });
+        case "unauthorizedAccessError":
+        case "jsonWebTokenError":
         case "TokenExpiredError":
             return response.status(401).json({ error: error.message });
+        default:
+            return response.status(500).json({ error: "Unexpected Error" });
     }
     next(error);
 };
@@ -48,7 +48,10 @@ const userExtractor = async (request, response, next) => {
     const decodedToken =
         request.token != null ? jwt.verify(request.token, config.SECRET) : null;
     if (!request.token || !decodedToken) {
-        throw { name: "jsonWebTokenError" };
+        throw {
+            name: "jsonWebTokenError",
+            message: "Access to resource denied",
+        };
     }
     const user = await User.findById(decodedToken.id);
     request.user = user;
@@ -64,7 +67,10 @@ const extractor = async (request, model, modelName) => {
         request.method !== "POST" &&
         objectOfModel.user.toString() !== request.user._id.toString()
     ) {
-        throw { name: "unauthorizedAccessError" };
+        throw {
+            name: "unauthorizedAccessError",
+            message: "Access to resource denied",
+        };
     }
     return objectOfModel;
 };
