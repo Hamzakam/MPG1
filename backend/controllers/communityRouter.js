@@ -1,5 +1,6 @@
 const communityRouter = require("express").Router();
 const Community = require("../models/communities");
+const Subscribe = require("../models/subscribe");
 const { userExtractor, communityExtractor } = require("../utils/middleware");
 
 require("express-async-errors");
@@ -28,15 +29,21 @@ communityRouter.get("/", async (request, response) => {
 communityRouter.get("/search", async (request, response) => {
     const searchInput = request.body.input;
     const searchReg = new RegExp(searchInput, "i");
-    const communities = await Community.find({
-        $or: [
-            { name: searchReg },
+    const communities = await Community.find(
+        {
+            $or: [
+                { name: searchReg },
 
-            {
-                $text: { $search: searchInput },
-            },
-        ],
-    });
+                {
+                    $text: { $search: searchInput },
+                },
+            ],
+        },
+        {
+            name: 1,
+            description: 1,
+        }
+    );
     if (!communities) {
         throw { name: "notFoundError" };
     }
@@ -73,6 +80,50 @@ communityRouter.put(
         response.status(200).json(updatedCommunity);
     }
 );
+
+communityRouter.post(
+    "/follow",
+    userExtractor,
+    communityExtractor,
+    async (request, response) => {
+        const isSubbed = await Subscribe.findOne({
+            $and: [
+                { user: request.user._id },
+                { community: request.community._id },
+            ],
+        });
+        if (isSubbed) {
+            throw {
+                name: "ValidationError",
+                message: "Already Subscribed to this community",
+            };
+        }
+        const sub = new Subscribe({
+            user: request.user._id,
+            community: request.community._id,
+        });
+        const subObject = await sub.save();
+        response.status(200).json(subObject);
+    }
+);
+
+communityRouter.delete("/follow", userExtractor, async (request, response) => {
+    const community = await Community.findById(request.body.community);
+    if (!community) {
+        throw { name: "notFoundError" };
+    }
+    const isSubbed = await Subscribe.findOne({
+        $and: [{ user: request.user._id }, { community: community._id }],
+    });
+    if (!isSubbed) {
+        throw {
+            name: "ValidationError",
+            message: "Not subscribed to the community",
+        };
+    }
+    await Subscribe.findByIdAndDelete(isSubbed._id);
+    response.status(204).json({ message: "successful Delete" });
+});
 
 communityRouter.delete(
     "/:id",
