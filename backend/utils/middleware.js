@@ -7,25 +7,24 @@ const Comment = require("../models/comments");
 const Reply = require("../models/replies");
 const Posts = require("../models/posts");
 
-const errorHandler = (error, request, response, next) => {
-    logger.error(error);
+const errorHandler = (error,request, response,next) => {
+    logger.error(error.name);
+    console.log(error);
     switch (error.name) {
-        case "CastError":
-        case "ValidationError":
-        case "TypeError":
-            return response.status(400).json({ error: error.message });
-        case "credentialError":
-            return response.status(400).json({
-                error: error.message || "Invalid Credentials. Please Try again",
-            });
-        case "notFoundError":
-            return response.status(404).json({ error: "No Resource Error" });
-        case "unauthorizedAccessError":
-        case "jsonWebTokenError":
-        case "TokenExpiredError":
-            return response.status(401).json({ error: error.message });
-        default:
-            return response.status(500).json({ error: "Unexpected Error" });
+    case "CastError":
+    case "ValidationError":
+    case "TypeError":
+        return response.status(400).json({ error: error.message });
+    case "credentialError":
+        return response.status(400).json({
+            error: error.message || "Invalid Credentials. Please Try again",
+        });
+    case "notFoundError":
+        return response.status(404).json({ error: "No Resource Error" });
+    case "unauthorizedAccessError":
+    case "jsonWebTokenError":
+    case "TokenExpiredError":
+        return response.status(401).json({ error: error.message });
     }
     next(error);
 };
@@ -94,14 +93,14 @@ const replyExtractor = async (request, response, next) => {
     next();
 };
 
-const paginationHelper = (request, next) => {
-    request.body.offset = request.query.offset || 0;
+const paginationHelper = (request, response, next) => {
+    request.body.offset = Number(request.query.offset || 0);
     request.body.limit =
         !request.query.limit ||
-        request.query.limit > 10 ||
-        request.query.limit < 0
+            request.query.limit > 10 ||
+            request.query.limit < 0
             ? 10
-            : request.query.limit;
+            : Number(request.query.limit);
     next();
 };
 

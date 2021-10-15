@@ -27,23 +27,33 @@ communityRouter.get("/", async (request, response) => {
 });
 
 communityRouter.get("/search", async (request, response) => {
-    const searchInput = request.body.input;
-    const searchReg = new RegExp(searchInput, "i");
+    const searchFilter = request.query.filter;
+    console.log(request.body.limit);
+    if (!searchFilter || searchFilter === "") {
+        console.log(searchFilter);
+        throw { 
+            name: "ValidationError", 
+            message: "The filter is not defined or is empty." 
+        };
+    }
+    const searchReg = new RegExp(searchFilter, "i");
     const communities = await Community.find(
         {
             $or: [
                 { name: searchReg },
 
                 {
-                    $text: { $search: searchInput },
+                    $text: { $search: searchFilter },
                 },
             ],
         },
         {
             name: 1,
             description: 1,
-        }
-    );
+        },
+    )
+        .skip(request.body.offset * request.body.limit)
+        .limit(request.body.limit);
     if (!communities) {
         throw { name: "notFoundError" };
     }
