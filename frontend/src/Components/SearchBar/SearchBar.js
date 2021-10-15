@@ -1,29 +1,39 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./SearchBar.css";
 import SearchIcon from "@material-ui/icons/Search";
 import CloseIcon from "@material-ui/icons/Close";
+import { search } from "./services";
 
 function SearchBar({ placeholder, data }) {
   const [filteredData, setFilteredData] = useState([]);
-  const [wordEntered, setWordEntered] = useState("");
+  const [searchFilter, setSearchFilter] = useState("");
 
   const handleFilter = (event) => {
-    const searchWord = event.target.value;
-    setWordEntered(searchWord);
-    const newFilter = data.filter((value) => {
-      return value.title.toLowerCase().includes(searchWord.toLowerCase());
-    });
-
-    if (searchWord === "") {
-      setFilteredData([]);
-    } else {
-      setFilteredData(newFilter);
-    }
+    setSearchFilter(event.target.value);
   };
 
+  //Will run everytime searchFilter is changed.
+  useEffect(() => {
+    try {
+      //use Effects callback is not async so wrapper async function is required.
+      const fetchFilteredData = async () => {
+        if (searchFilter === "") {
+          setFilteredData([]);
+          return;
+        }
+        //calling search community. returns a array.
+        const communities = await search(searchFilter);
+        setFilteredData(communities);
+      };
+      //calling wrapper function.
+      fetchFilteredData();
+    } catch (error) {
+      console.log(error);
+    }
+  }, [searchFilter]);
   const clearInput = () => {
     setFilteredData([]);
-    setWordEntered("");
+    setSearchFilter("");
   };
 
   return (
@@ -32,7 +42,7 @@ function SearchBar({ placeholder, data }) {
         <input
           type="text"
           placeholder={placeholder}
-          value={wordEntered}
+          value={searchFilter}
           onChange={handleFilter}
         />
         <div className="searchIcon">
@@ -43,13 +53,18 @@ function SearchBar({ placeholder, data }) {
           )}
         </div>
       </div>
-      {filteredData.length != 0 && (
-        
+      {filteredData.length !== 0 && (
         <div className="dataResult">
-          {filteredData.slice(0, 15).map((value, key) => {
+          {filteredData.map((community) => {
             return (
-              <a className="dataItem" href={value.link} target="_blank" rel="noreferrer">
-                <p>{value.title} </p>
+              <a
+                className="dataItem"
+                key={community.id}
+                href={`/api/sub/${community.id}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <p>{community.name} </p>
               </a>
             );
           })}
