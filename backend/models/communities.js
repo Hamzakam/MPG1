@@ -10,6 +10,7 @@ const communitySchema = mongoose.Schema({
         minLength: 4,
         maxLength: 40,
         unique: true,
+        uniqueCaseInsensitive: true,
     },
     description: {
         type: String,
@@ -46,7 +47,7 @@ const communitySchema = mongoose.Schema({
 });
 
 communitySchema.plugin(uniqueValidator);
-
+communitySchema.index({ name: "text" });
 communitySchema.set("toJSON", {
     transform: (document, returnedObject) => {
         returnedObject.id = returnedObject._id.toString();

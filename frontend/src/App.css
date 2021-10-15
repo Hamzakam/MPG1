@@ -1,22 +1,36 @@
-.Post{
+@import url('https://fonts.googleapis.com/css2?family=Sora&display=swap');
+*{
+    font-family: 'Sora', sans-serif;
+    box-sizing:  border-box;
+    margin: 0;
+    padding: 0;
+}
+.Post {
     border: 0.2em solid #1e1e2b;
     margin: 0.5em;
-    padding:1.5em;
+    padding: 1.5em;
     background-color: #827397;
     white-space: nowrap;
     overflow-x: auto;
 }
 
-.UpDownCounter{
-    
+.UpDownCounter {
     display: inline-block;
     margin-right: 0.2em 0.2em;
 }
-h3.PostTitle{
+h3.PostTitle {
     display: inline-block;
     margin-left: 0.2em;
 }
-button{
+button {
     background: transparent;
     border: none;
+}
+
+.wrapper {
+    padding: 1% 3%;
+}
+.pic{
+    height: 100px;
+    width: 100px;
 }

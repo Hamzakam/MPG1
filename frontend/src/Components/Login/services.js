@@ -6,11 +6,13 @@ const login = async (credentials) => {
         if (response.status === 401 || response.status === 404) {
             throw response.body.error;
         }
-        console.log(response.data);
+        if (response.data.token) {
+            localStorage.setItem("user", JSON.stringify(response.data.token));
+        }
         return response.data;
-    } catch (Exception) {
+    } catch (error) {
         //TODO: Add a notification or something like that.
-        console.log(Exception);
+        console.log(error);
     }
 };
 
@@ -21,10 +23,14 @@ const register = async (credentials) => {
             throw response.body.error;
         }
         return response.data;
-    } catch (Exception) {
+    } catch (error) {
         //TODO: Add a notification or something like that.
-        console.log(Exception);
+        console.log(error);
     }
 };
 
-export { login, register };
+const logout = () => {
+    localStorage.removeItem("user");
+};
+
+export { login, register, logout };

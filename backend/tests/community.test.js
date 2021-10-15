@@ -217,7 +217,6 @@ describe("Check if delete community works", () => {
         const loggedInUser = await api
             .post("/api/login")
             .send({ username, password });
-        console.log(loggedInUser.body);
         const communities = await communitiesInDb();
         await api
             .delete(`/api/sub/${communities[0]._id}`)

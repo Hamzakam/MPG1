@@ -7,26 +7,23 @@ const Comment = require("../models/comments");
 const Reply = require("../models/replies");
 const Posts = require("../models/posts");
 
-const errorHandler = (error, request, response, next) => {
+const errorHandler = (error,request, response,next) => {
     logger.error(error);
-    if (error.name === "CastError") {
-        return response.status(400).json({ error: "malformatted id" });
-    } else if (error.name === "ValidationError" || error.name === "TypeError") {
+    switch (error.name) {
+    case "CastError":
+    case "ValidationError":
+    case "TypeError":
+    case "MongoServerError":
         return response.status(400).json({ error: error.message });
-    } else if (error.name === "credentialError") {
+    case "credentialError":
         return response.status(400).json({
             error: error.message || "Invalid Credentials. Please Try again",
         });
-    } else if (error.name === "notFoundError") {
+    case "notFoundError":
         return response.status(404).json({ error: "No Resource Error" });
-    } else if (
-        error.name === "unauthorizedAccessError" ||
-        error.name.toLowerCase() === "jsonwebtokenerror"
-    ) {
-        return response
-            .status(401)
-            .json({ error: "Access to resource denied" });
-    } else if (error.name === "TokenExpiredError") {
+    case "unauthorizedAccessError":
+    case "jsonWebTokenError":
+    case "TokenExpiredError":
         return response.status(401).json({ error: error.message });
     }
     next(error);
@@ -50,7 +47,10 @@ const userExtractor = async (request, response, next) => {
     const decodedToken =
         request.token != null ? jwt.verify(request.token, config.SECRET) : null;
     if (!request.token || !decodedToken) {
-        throw { name: "jsonWebTokenError" };
+        throw {
+            name: "jsonWebTokenError",
+            message: "Access to resource denied",
+        };
     }
     const user = await User.findById(decodedToken.id);
     request.user = user;
@@ -66,7 +66,10 @@ const extractor = async (request, model, modelName) => {
         request.method !== "POST" &&
         objectOfModel.user.toString() !== request.user._id.toString()
     ) {
-        throw { name: "unauthorizedAccessError" };
+        throw {
+            name: "unauthorizedAccessError",
+            message: "Access to resource denied",
+        };
     }
     return objectOfModel;
 };
@@ -90,6 +93,17 @@ const replyExtractor = async (request, response, next) => {
     next();
 };
 
+const paginationHelper = (request, response, next) => {
+    request.body.offset = !request.query.offset?Number(request.query.offset): 0;
+    request.body.limit =
+        !request.query.limit ||
+            request.query.limit > 10 ||
+            request.query.limit < 0
+            ? 10
+            : Number(request.query.limit);
+    next();
+};
+
 module.exports = {
     errorHandler,
     unknownEndPointHandler,
@@ -99,4 +113,5 @@ module.exports = {
     postExtractor,
     commentExtracter,
     replyExtractor,
+    paginationHelper,
 };

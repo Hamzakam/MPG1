@@ -39,6 +39,7 @@ mongoose
         logger.error(error);
     });
 app.use(middleware.tokenExtractor);
+app.use(middleware.paginationHelper);
 app.use("/api/users", userRouter);
 app.use("/api/login", loginRouter);
 app.use("/api/posts", postsRouter);

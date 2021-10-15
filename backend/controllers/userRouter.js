@@ -3,6 +3,8 @@ const userRouter = require("express").Router();
 const bcrypt = require("bcryptjs");
 const emailValidator = require("@Hamzakam/deep-email-validator");
 const passwordValidator = require("password-validator");
+const { userExtractor } = require("../utils/middleware");
+const Subscribe = require("../models/subscribe");
 
 const passSchema = new passwordValidator();
 passSchema
@@ -54,6 +56,14 @@ userRouter.get("/", async (request, response) => {
         content: 1,
     });
     response.json(users);
+});
+
+userRouter.get("/subscribed", userExtractor, async (request, response) => {
+    const subscribed = await Subscribe.find(
+        { $user: request.user._id },
+        { community: 1 }
+    );
+    response.status(200).json(subscribed);
 });
 
 module.exports = userRouter;
