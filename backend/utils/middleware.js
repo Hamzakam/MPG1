@@ -94,6 +94,17 @@ const replyExtractor = async (request, response, next) => {
     next();
 };
 
+const paginationHelper = (request, next) => {
+    request.body.offset = request.query.offset || 0;
+    request.body.limit =
+        !request.query.limit ||
+        request.query.limit > 10 ||
+        request.query.limit < 0
+            ? 10
+            : request.query.limit;
+    next();
+};
+
 module.exports = {
     errorHandler,
     unknownEndPointHandler,
@@ -103,4 +114,5 @@ module.exports = {
     postExtractor,
     commentExtracter,
     replyExtractor,
+    paginationHelper,
 };
