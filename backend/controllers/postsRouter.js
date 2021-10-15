@@ -12,9 +12,7 @@ const {
 require("express-async-errors");
 
 postsRouter.get("/", async (request, response) => {
-    const posts = await Posts.find({}).populate("comments", {
-        content: 1,
-    });
+    const posts = await Posts.find({});
     response.status(200).json(posts);
 });
 

@@ -19,7 +19,7 @@ communityRouter.post("/", userExtractor, async (request, response) => {
 communityRouter.get("/", async (request, response) => {
     const communities = request.query.name
         ? await Community.findOne({ name: request.query.name })
-        : await Community.find({});
+        : await Community.find({}, { posts: 0 });
     if (!communities) {
         throw { name: "notFoundError" };
     }
@@ -29,9 +29,9 @@ communityRouter.get("/", async (request, response) => {
 communityRouter.get("/search", async (request, response) => {
     const searchFilter = request.query.filter;
     if (!searchFilter || searchFilter === "") {
-        throw { 
-            name: "ValidationError", 
-            message: "The filter is not defined or is empty." 
+        throw {
+            name: "ValidationError",
+            message: "The filter is not defined or is empty.",
         };
     }
     const searchReg = new RegExp(searchFilter, "i");
@@ -48,7 +48,7 @@ communityRouter.get("/search", async (request, response) => {
         {
             name: 1,
             description: 1,
-        },
+        }
     )
         .skip(request.body.offset * request.body.limit)
         .limit(request.body.limit);
@@ -77,14 +77,10 @@ communityRouter.put(
             tag: request.body.tags,
             updated_at: Date.now(),
         };
-        const updatedCommunity = await Community.findByIdAndUpdate(
-            id,
-            community,
-            {
-                runValidators: true,
-                new: true,
-            }
-        );
+        const updatedCommunity = await Community.findByIdAndUpdate(id, community, {
+            runValidators: true,
+            new: true,
+        });
         response.status(200).json(updatedCommunity);
     }
 );
@@ -95,10 +91,7 @@ communityRouter.post(
     communityExtractor,
     async (request, response) => {
         const isSubbed = await Subscribe.findOne({
-            $and: [
-                { user: request.user._id },
-                { community: request.community._id },
-            ],
+            $and: [{ user: request.user._id }, { community: request.community._id }],
         });
         if (isSubbed) {
             throw {
