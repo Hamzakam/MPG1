@@ -10,9 +10,9 @@ const login = async (credentials) => {
             localStorage.setItem("user", JSON.stringify(response.data.token));
         }
         return response.data;
-    } catch (Exception) {
+    } catch (error) {
         //TODO: Add a notification or something like that.
-        console.log(Exception);
+        console.log(error);
     }
 };
 
@@ -23,9 +23,9 @@ const register = async (credentials) => {
             throw response.body.error;
         }
         return response.data;
-    } catch (Exception) {
+    } catch (error) {
         //TODO: Add a notification or something like that.
-        console.log(Exception);
+        console.log(error);
     }
 };
 
