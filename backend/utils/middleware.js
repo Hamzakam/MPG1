@@ -8,12 +8,12 @@ const Reply = require("../models/replies");
 const Posts = require("../models/posts");
 
 const errorHandler = (error,request, response,next) => {
-    logger.error(error.name);
-    console.log(error);
+    logger.error(error);
     switch (error.name) {
     case "CastError":
     case "ValidationError":
     case "TypeError":
+    case "MongoServerError":
         return response.status(400).json({ error: error.message });
     case "credentialError":
         return response.status(400).json({
@@ -94,7 +94,7 @@ const replyExtractor = async (request, response, next) => {
 };
 
 const paginationHelper = (request, response, next) => {
-    request.body.offset = Number(request.query.offset || 0);
+    request.body.offset = !request.query.offset?Number(request.query.offset): 0;
     request.body.limit =
         !request.query.limit ||
             request.query.limit > 10 ||

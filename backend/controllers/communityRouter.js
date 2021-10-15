@@ -28,9 +28,7 @@ communityRouter.get("/", async (request, response) => {
 
 communityRouter.get("/search", async (request, response) => {
     const searchFilter = request.query.filter;
-    console.log(request.body.limit);
     if (!searchFilter || searchFilter === "") {
-        console.log(searchFilter);
         throw { 
             name: "ValidationError", 
             message: "The filter is not defined or is empty." 
