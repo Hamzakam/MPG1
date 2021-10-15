@@ -15,8 +15,7 @@ module.exports = {
         "linebreak-style": ["error", "unix"],
         quotes: ["error", "double"],
         semi: ["error", "always"],
-        "prettier/prettier": "error",
-
+        // "prettier/prettier": "error",
     },
-    plugins: ["prettier"],
+    // plugins: ["prettier"],
 };
