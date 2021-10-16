@@ -1,5 +1,6 @@
-//Creates express.Router PostsRouter and assigns get,getbyid,post,put,delete.
-//using express-async-errors as wrapper for throwing/catching/passing errors.
+/*
+ * Creates PostsRouter(express.Router) and creates HTTP crud methods.
+ */
 
 const Posts = require("../models/posts");
 const Views = require("../models/view");
@@ -12,7 +13,27 @@ const {
 require("express-async-errors");
 
 postsRouter.get("/", async (request, response) => {
-    const posts = await Posts.find({});
+    const community = request.query.community;
+    /** 
+     * TODO: sort by-
+     *  Most popular
+     *  Most controversial
+     *  latest
+     *  oldest
+     */
+    /*
+     * query for Most popular: 
+     */
+    const dbQuery = community?{community:community}:{};
+    /*
+     * const mostPopular = {
+     *     $sort:{upvotes}    
+     * ;
+     */
+    const posts = await Posts.find(dbQuery)
+        .skip(request.body.offset * request.body.limit)
+        .limit(request.body.limit);
+    
     response.status(200).json(posts);
 });
 
