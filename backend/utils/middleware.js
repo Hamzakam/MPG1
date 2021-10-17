@@ -7,7 +7,7 @@ const Comment = require("../models/comments");
 const Reply = require("../models/replies");
 const Posts = require("../models/posts");
 
-const errorHandler = (error,request, response) => {
+const errorHandler = (error,request, response,next) => {
     logger.error(error);
     switch (error.name) {
     case "CastError":
@@ -25,9 +25,8 @@ const errorHandler = (error,request, response) => {
     case "jsonWebTokenError":
     case "TokenExpiredError":
         return response.status(401).json({ error: error.message });
-    default:
-        return response.status(500).json({error:"internal server error"});
     }
+    next();
 };
 
 const unknownEndPointHandler = (request, response) => {
@@ -95,14 +94,17 @@ const replyExtractor = async (request, response, next) => {
 };
 
 const paginationHelper = (request, response, next) => {
-    request.body.offset = request.query.offset?Number(request.query.offset): 0;
+    request.body.offset = !parseInt(request.body.offset)?0:Number(request.query.offset);
     request.body.limit =
-        !request.query.limit ||
+        !parseInt(request.query.limit) ||
             request.query.limit > 10 ||
             request.query.limit < 0
             ? 10
             : Number(request.query.limit);
-    request.body.sortBy = request.query.sortBy?request.query.sortBy:"default";
+    request.body.sortBy = request.query.sortBy ||
+        request.query.sortBy!=="undefined"
+        ?request.query.sortBy
+        :"default";
     next();
 };
 

@@ -19,7 +19,7 @@ communityRouter.post("/", userExtractor, async (request, response) => {
 communityRouter.get("/", async (request, response) => {
     const communities = request.query.name
         ? await Community.findOne({ name: request.query.name })
-        : await Community.find({}, { posts: 0 });
+        : await Community.find({});
     if (!communities) {
         throw { name: "notFoundError" };
     }
@@ -66,6 +66,7 @@ communityRouter.get("/:id", async (request, response) => {
     }
     response.status(200).json(community);
 });
+
 communityRouter.put(
     "/:id",
     userExtractor,
@@ -90,21 +91,18 @@ communityRouter.post(
     userExtractor,
     communityExtractor,
     async (request, response) => {
-        const isSubbed = await Subscribe.findOne({
+        const sub = await Subscribe.updateOne({
             $and: [{ user: request.user._id }, { community: request.community._id }],
-        });
-        if (isSubbed) {
-            throw {
-                name: "ValidationError",
-                message: "Already Subscribed to this community",
-            };
-        }
-        const sub = new Subscribe({
+        },{
             user: request.user._id,
             community: request.community._id,
+        },
+        {
+            runValidators: true,
+            new: true,
+            upsert:true
         });
-        const subObject = await sub.save();
-        response.status(200).json(subObject);
+        response.status(201).json(sub);
     }
 );
 
