@@ -11,7 +11,11 @@ const {
     usersInDb,
     communitiesInDb,
 } = require("../utils/testhelper");
+const Votes = require("../models/vote");
 const api = supertest(app);
+const loginUrl = "/api/login";
+const voteUrl = "/api/posts/vote"; 
+
 
 beforeAll(async () => {
     await User.deleteMany({});
@@ -75,7 +79,7 @@ describe("Check if user can make a post", () => {
     test("check if logged in user can make a post", async () => {
         const { username, password } = helperLists.userList[0];
         const loggedInUser = await api
-            .post("/api/login")
+            .post(loginUrl)
             .send({ username, password });
         const communities = await communitiesInDb();
         const postObj = {
@@ -95,7 +99,7 @@ describe("Check if user can make a post", () => {
     test("if post validation is working(invalid title)", async () => {
         const { username, password } = helperLists.userList[0];
         const loggedInUser = await api
-            .post("/api/login")
+            .post(loginUrl)
             .send({ username, password });
         const communities = await communitiesInDb();
         const postObj = {
@@ -115,7 +119,7 @@ describe("Check if user can make a post", () => {
     test("if post validation is working(invalid content)", async () => {
         const { username, password } = helperLists.userList[0];
         const loggedInUser = await api
-            .post("/api/login")
+            .post(loginUrl)
             .send({ username, password });
         const communities = await communitiesInDb();
         const postObj = {
@@ -160,7 +164,7 @@ describe("Check if update post works", () => {
     test("If user can update Post", async () => {
         const { username, password } = helperLists.userList[0];
         const loggedInUser = await api
-            .post("/api/login")
+            .post(loginUrl)
             .send({ username, password });
         const posts = await postsInDb();
         const post = {
@@ -179,7 +183,7 @@ describe("Check if update post works", () => {
         await userCreate(helperLists.userList[1]);
         const { username, password } = helperLists.userList[1];
         const loggedInUser = await api
-            .post("/api/login")
+            .post(loginUrl)
             .send({ username, password });
         const posts = await postsInDb();
         const post = {
@@ -196,7 +200,7 @@ describe("Check if update post works", () => {
     test("Check If validation is working(invalid title)", async () => {
         const { username, password } = helperLists.userList[0];
         const loggedInUser = await api
-            .post("/api/login")
+            .post(loginUrl)
             .send({ username, password });
         const posts = await postsInDb();
         const post = {
@@ -212,7 +216,7 @@ describe("Check if update post works", () => {
     test("Check If validation is working(invalid desc)", async () => {
         const { username, password } = helperLists.userList[0];
         const loggedInUser = await api
-            .post("/api/login")
+            .post(loginUrl)
             .send({ username, password });
         const posts = await postsInDb();
         const post = {
@@ -244,7 +248,7 @@ describe("Check if delete works", () => {
     test("If logged in user can delete post", async () => {
         const { username, password } = helperLists.userList[0];
         const loggedInUser = await api
-            .post("/api/login")
+            .post(loginUrl)
             .send({ username, password });
         const posts = await postsInDb();
         await api
@@ -264,7 +268,7 @@ describe("Check if delete works", () => {
         await userCreate(helperLists.userList[1]);
         const { username, password } = helperLists.userList[1];
         const loggedInUser = await api
-            .post("/api/login")
+            .post(loginUrl)
             .send({ username, password });
         const posts = await postsInDb();
         await api
@@ -284,6 +288,7 @@ describe("check if upvotes are working", () => {
     });
     beforeEach(async () => {
         await Posts.deleteMany({});
+        await Votes.deleteMany({});
         const users = await usersInDb();
         const communities = await communitiesInDb();
         const postObjects = helperLists.postList.slice(0, 3).map((post) => {
@@ -296,144 +301,170 @@ describe("check if upvotes are working", () => {
         await Posts.insertMany(postObjects);
     });
     test("if logged in users can upvote", async () => {
+
         const { username, password } = helperLists.userList[0];
         const loggedInUser = await api
-            .post("/api/login")
+            .post(loginUrl)
             .send({ username, password });
         const posts = await postsInDb();
-        const upvote = await api
-            .post("/api/posts/up")
+        
+        await api
+            .post(voteUrl)
             .set("Authorization", `Bearer ${loggedInUser.body.token}`)
-            .send({ up: 1, post: posts[0]._id })
+            .send({ vote: 1, post: posts[0]._id })
+            .expect(201);
+        
+        const votes = await api.get(voteUrl)
+            .send({post:posts[0]._id})
             .expect(200);
-        expect(upvote.body.upvotes).toBe(1);
+        expect(votes.body.votes).toBe(1);
     });
+
     test("if multiple logged in users can upvote", async () => {
         const logInPromiseArray = helperLists.userList
             .slice(0, 3)
             .map(async (user) => {
-                return await api.post("/api/login").send(user);
+                return await api.post(loginUrl).send(user);
             });
         const loggedInUsers = await Promise.all(logInPromiseArray);
         const posts = await postsInDb();
         const users = loggedInUsers.map((loggedInUser) => loggedInUser.body);
         await api
-            .post("/api/posts/up")
+            .post(voteUrl)
             .set("Authorization", `Bearer ${users[0].token}`)
-            .send({ up: 1, post: posts[0]._id })
-            .expect(200);
+            .send({ vote: 1, post: posts[0]._id })
+            .expect(201);
         await api
-            .post("/api/posts/up")
+            .post(voteUrl)
             .set("Authorization", `Bearer ${users[1].token}`)
-            .send({ up: -1, post: posts[0]._id })
-            .expect(200);
+            .send({ vote: -1, post: posts[0]._id })
+            .expect(201);
 
         await api
-            .post("/api/posts/up")
+            .post(voteUrl)
             .set("Authorization", `Bearer ${users[2].token}`)
-            .send({ up: 0, post: posts[0]._id })
+            .send({ vote: 0, post: posts[0]._id })
+            .expect(201);
+        const votes = await api.get(voteUrl)
+            .send({post:posts[0]._id})
             .expect(200);
-
-        const post = await Posts.findById(posts[0]._id);
-        expect(post.upvotes).toBe(posts[0].upvotes);
+        expect(votes.body.votes).toBe(0);
     });
     test("downvoting works", async () => {
         const { username, password } = helperLists.userList[0];
         const loggedInUser = await api
-            .post("/api/login")
+            .post(loginUrl)
             .send({ username, password });
         const posts = await postsInDb();
-        const upvote = await api
-            .post("/api/posts/up")
+        await api
+            .post(voteUrl)
             .set("Authorization", `Bearer ${loggedInUser.body.token}`)
-            .send({ up: -1, post: posts[0]._id })
+            .send({ vote: -1, post: posts[0]._id })
+            .expect(201);
+        const votes = await api.get(voteUrl)
+            .send({post:posts[0]._id})
             .expect(200);
-        expect(upvote.body.upvotes).toBe(-1);
+        expect(votes.body.votes).toBe(-1);
     });
     test("remove vote works", async () => {
         const { username, password } = helperLists.userList[0];
         const loggedInUser = await api
-            .post("/api/login")
+            .post(loginUrl)
             .send({ username, password });
         const posts = await postsInDb();
-        const upvote = await api
-            .post("/api/posts/up")
+        await api
+            .post(voteUrl)
             .set("Authorization", `Bearer ${loggedInUser.body.token}`)
-            .send({ up: 0, post: posts[0]._id })
+            .send({ vote: 0, post: posts[0]._id })
+            .expect(201);
+        const votes = await api.get(voteUrl)
+            .send({post:posts[0]._id})
             .expect(200);
-        expect(upvote.body.upvotes).toBe(0);
+        expect(votes.body.votes).toBe(0);
     });
     test("upvoting then downvoting works", async () => {
         const { username, password } = helperLists.userList[0];
         const loggedInUser = await api
-            .post("/api/login")
+            .post(loginUrl)
             .send({ username, password });
         const posts = await postsInDb();
         await api
-            .post("/api/posts/up")
+            .post(voteUrl)
             .set("Authorization", `Bearer ${loggedInUser.body.token}`)
-            .send({ up: 1, post: posts[0]._id })
-            .expect(200);
-        const upvote = await api
-            .post("/api/posts/up")
+            .send({ vote: 1, post: posts[0]._id })
+            .expect(201);
+        await api
+            .post(voteUrl)
             .set("Authorization", `Bearer ${loggedInUser.body.token}`)
-            .send({ up: -1, post: posts[0]._id })
+            .send({ vote: -1, post: posts[0]._id })
+            .expect(201);
+        const votes = await api.get(voteUrl)
+            .send({post:posts[0]._id})
             .expect(200);
-        expect(upvote.body.upvotes).toBe(-1);
+        expect(votes.body.votes).toBe(-1);
     });
     test("downvoting then upvoting works", async () => {
         const { username, password } = helperLists.userList[0];
         const loggedInUser = await api
-            .post("/api/login")
+            .post(loginUrl)
             .send({ username, password });
         const posts = await postsInDb();
         await api
-            .post("/api/posts/up")
+            .post(voteUrl)
             .set("Authorization", `Bearer ${loggedInUser.body.token}`)
-            .send({ up: -1, post: posts[0]._id })
-            .expect(200);
-        const upvote = await api
-            .post("/api/posts/up")
+            .send({ vote: -1, post: posts[0]._id })
+            .expect(201);
+        await api
+            .post(voteUrl)
             .set("Authorization", `Bearer ${loggedInUser.body.token}`)
-            .send({ up: 1, post: posts[0]._id })
+            .send({ vote: 1, post: posts[0]._id })
+            .expect(201);
+        const votes = await api.get(voteUrl)
+            .send({post:posts[0]._id})
             .expect(200);
-        expect(upvote.body.upvotes).toBe(1);
+        expect(votes.body.votes).toBe(1);
     });
     test("upvoting then removing vote works", async () => {
         const { username, password } = helperLists.userList[0];
         const loggedInUser = await api
-            .post("/api/login")
+            .post(loginUrl)
             .send({ username, password });
         const posts = await postsInDb();
         await api
-            .post("/api/posts/up")
+            .post(voteUrl)
             .set("Authorization", `Bearer ${loggedInUser.body.token}`)
-            .send({ up: 1, post: posts[0]._id })
-            .expect(200);
-        const upvote = await api
-            .post("/api/posts/up")
+            .send({ vote: 1, post: posts[0]._id })
+            .expect(201);
+        await api
+            .post(voteUrl)
             .set("Authorization", `Bearer ${loggedInUser.body.token}`)
-            .send({ up: 0, post: posts[0]._id })
+            .send({ vote: 0, post: posts[0]._id })
+            .expect(201);
+        const votes = await api.get(voteUrl)
+            .send({post:posts[0]._id})
             .expect(200);
-        expect(upvote.body.upvotes).toBe(0);
+        expect(votes.body.votes).toBe(0);
     });
     test("downvoting then removing vote works", async () => {
         const { username, password } = helperLists.userList[0];
         const loggedInUser = await api
-            .post("/api/login")
+            .post(loginUrl)
             .send({ username, password });
         const posts = await postsInDb();
         await api
-            .post("/api/posts/up")
+            .post(voteUrl)
             .set("Authorization", `Bearer ${loggedInUser.body.token}`)
-            .send({ up: -1, post: posts[0]._id })
-            .expect(200);
-        const upvote = await api
-            .post("/api/posts/up")
+            .send({ vote: -1, post: posts[0]._id })
+            .expect(201);
+        await api
+            .post(voteUrl)
             .set("Authorization", `Bearer ${loggedInUser.body.token}`)
-            .send({ up: 0, post: posts[0]._id })
+            .send({ vote: 0, post: posts[0]._id })
+            .expect(201);
+        const votes = await api.get(voteUrl)
+            .send({post:posts[0]._id})
             .expect(200);
-        expect(upvote.body.upvotes).toBe(0);
+        expect(votes.body.votes).toBe(0);
     });
 });
 
