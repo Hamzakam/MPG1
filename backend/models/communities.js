@@ -18,10 +18,6 @@ const communitySchema = mongoose.Schema({
         minLength: 10,
         maxLength: 100,
     },
-    members: {
-        type: Number,
-        default: 0,
-    },
     created_at: {
         type: Date,
         default: Date.now,
@@ -38,12 +34,6 @@ const communitySchema = mongoose.Schema({
         },
     ],
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    posts: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Posts",
-        },
-    ],
 });
 
 communitySchema.plugin(uniqueValidator);
