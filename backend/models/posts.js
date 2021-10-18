@@ -44,7 +44,6 @@ const postsSchema = mongoose.Schema({
             ref: "Comment",
         },
     ],
-    views: { type: mongoose.Schema.Types.ObjectId, ref: "Views" },
 });
 
 postsSchema.plugin(uniqueValidator);

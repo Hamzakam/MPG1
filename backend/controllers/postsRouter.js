@@ -48,17 +48,13 @@ postsRouter.post(
     userExtractor,
     communityExtractor,
     async (request, response) => {
-        const viewObject = new Views();
-        const savedView = await viewObject.save();
         const postsObject = new Posts({
             title: request.body.title,
             content: request.body.content,
             tags: request.body.tags,
             user: request.user._id,
             community: request.community._id,
-            views: savedView._id,
         });
-
         const savedPost = await postsObject.save();
         response.status(201).json(savedPost);
     }
@@ -101,29 +97,24 @@ postsRouter.get("/vote",async(request,response)=>{
 });
 
 //creates a view if a user has seen the post.
-postsRouter.post("/view", userExtractor, async (request, response) => {
-    const id = request.body.post;
-    const post = await Posts.findById(id);
-    if (!post) {
-        throw { name: "notFoundError" };
-    }
-    const views = await Views.findById(post.views);
+postsRouter.post("/view", userExtractor,postExtractor, async (request, response) => {
+    await Views.updateOne(
+        {
+            user:request.user._id,
+            post:request.post._id
+        },
+        {
+            user:request.user._id,
+            post:request.post._id,
+            last_viewed:Date.now()
+        },
+        {
+            runValidators: true,
+            upsert:true,
+            new: true,
 
-    const hadSeen = views.users.findIndex((user) => {
-        return user.userid.toString() === request.user._id.toString();
-    });
-
-    if (hadSeen === -1) {
-        views.users = views.users.concat({
-            userid: request.user._id,
-        });
-    } else {
-        views.users[hadSeen] = {
-            ...views.users[hadSeen]._doc,
-            last_viewed: Date.now(),
-        };
-    }
-    await views.save();
+        }
+    );
     response.status(200).end();
 });
 
