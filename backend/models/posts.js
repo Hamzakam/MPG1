@@ -16,7 +16,7 @@ const postsSchema = mongoose.Schema({
         minLength: 10,
         maxLength: 300,
     },
-    upvotes: {
+    votes: {
         type: Number,
         default: 0,
     },
@@ -44,13 +44,6 @@ const postsSchema = mongoose.Schema({
             ref: "Comment",
         },
     ],
-    upvoted_by: [
-        {
-            user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-            up: { type: Number, min: -1, max: 1 },
-        },
-    ],
-    views: { type: mongoose.Schema.Types.ObjectId, ref: "Views" },
 });
 
 postsSchema.plugin(uniqueValidator);

@@ -1,8 +1,11 @@
-//Creates express.Router PostsRouter and assigns get,getbyid,post,put,delete.
-//using express-async-errors as wrapper for throwing/catching/passing errors.
+/*
+ * Creates PostsRouter(express.Router) and creates HTTP crud methods.
+ */
 
+const mongoose = require("mongoose");
 const Posts = require("../models/posts");
 const Views = require("../models/view");
+const Votes = require("../models/vote");
 const postsRouter = require("express").Router();
 const {
     userExtractor,
@@ -11,13 +14,106 @@ const {
 } = require("../utils/middleware");
 require("express-async-errors");
 
+//Returns posts based on specified query parameters.
 postsRouter.get("/", async (request, response) => {
-    const posts = await Posts.find({}).populate("comments", {
-        content: 1,
-    });
+    const community = request.query.community;
+    /** 
+     * TODO: sort by-
+     *  Most popular
+     *  Most controversial
+     *  latest
+     *  oldest
+     */
+    /*
+     * query for Most popular: 
+     */
+    
+    const dbQuery = community?{community:mongoose.Types.ObjectId(community)}:{};
+    const limitQuery = { "$limit": request.body.limit};
+    const skipQuery = { "$skip": request.body.offset * request.body.limit };
+    // console.log([{$match:dbQuery},oldest,limitQuery,skipQuery]);
+    const posts = await Posts.aggregate([{$match:dbQuery},request.body.sortBy,limitQuery,skipQuery]);
+    
     response.status(200).json(posts);
 });
 
+//Creates a post on client request in the db.
+postsRouter.post(
+    "/",
+    userExtractor,
+    communityExtractor,
+    async (request, response) => {
+        const postsObject = new Posts({
+            title: request.body.title,
+            content: request.body.content,
+            tags: request.body.tags,
+            user: request.user._id,
+            community: request.community._id,
+        });
+        const savedPost = await postsObject.save();
+        response.status(201).json(savedPost);
+    }
+);
+
+//Create a vote for the post in the db.
+postsRouter.post("/vote", userExtractor,postExtractor, async (request, response) => {
+    const vote = await Votes.findOne({
+        user:request.user._id,
+        post:request.post._id
+    });
+    const voteFactor = vote?(-vote.vote):0;
+    const voteQuery = vote?{_id:vote._id}:{};
+    await Votes.updateOne(voteQuery,{
+        user:request.user._id,
+        post:request.post._id,
+        vote:request.body.vote
+    },
+    {
+        runValidators: true,
+        upsert:true,
+        new: true,
+
+    });
+    const updatedPost = await Posts.findByIdAndUpdate(request.post._id,{$inc:{votes:request.body.vote+voteFactor}},{new:true});   
+    response.status(201).json({votes:updatedPost.votes});
+});
+
+//Returns vote count for the requested post.
+postsRouter.get("/vote",async(request,response)=>{
+    const vote = await Votes.aggregate([
+        {
+            $match:{
+                post:mongoose.Types.ObjectId(request.body.post)
+            },
+        },
+        {$group: { _id: "$post", votes: { $sum: "$vote" } }}
+    ]);
+    response.status(200).json(vote[0]);
+});
+
+//creates a view if a user has seen the post.
+postsRouter.post("/view", userExtractor,postExtractor, async (request, response) => {
+    await Views.updateOne(
+        {
+            user:request.user._id,
+            post:request.post._id
+        },
+        {
+            user:request.user._id,
+            post:request.post._id,
+            last_viewed:Date.now()
+        },
+        {
+            runValidators: true,
+            upsert:true,
+            new: true,
+
+        }
+    );
+    response.status(200).end();
+});
+
+//Returns the post by searching the _id in the db.
 postsRouter.get("/:id", async (request, response) => {
     const id = request.params.id;
     const post = await Posts.findById(id);
@@ -27,32 +123,7 @@ postsRouter.get("/:id", async (request, response) => {
     response.status(200).json(post);
 });
 
-postsRouter.post(
-    "/",
-    userExtractor,
-    communityExtractor,
-    async (request, response) => {
-        const viewObject = new Views();
-        const savedView = await viewObject.save();
-        const postsObject = new Posts({
-            title: request.body.title,
-            content: request.body.content,
-            tags: request.body.tags,
-            user: request.user._id,
-            community: request.community._id,
-            views: savedView._id,
-        });
-
-        const savedPost = await postsObject.save();
-
-        request.user.posts = request.user.posts.concat(savedPost._id);
-        request.community.posts = request.community.posts.concat(savedPost._id);
-        await request.user.save();
-        await request.community.save();
-        response.status(201).json(savedPost);
-    }
-);
-
+//Updates and returns the new post.
 postsRouter.put(
     "/:id",
     userExtractor,
@@ -75,64 +146,14 @@ postsRouter.put(
     }
 );
 
-postsRouter.post("/up", userExtractor, async (request, response) => {
-    const id = request.body.post;
-    const post = await Posts.findById(id);
-    if (!post) {
-        throw { name: "notFoundError" };
-    }
-    const hadUpvoted = post.upvoted_by.findIndex(
-        (upvote) => upvote.user.toString() === request.user._id.toString()
-    );
-    if (hadUpvoted === -1) {
-        post.upvoted_by = post.upvoted_by.concat({
-            user: request.user._id,
-            up: request.body.up,
-        });
-    } else {
-        post.upvotes -= post.upvoted_by[hadUpvoted].up;
-        post.upvoted_by[hadUpvoted].up = request.body.up;
-    }
-    post.upvotes += request.body.up;
-    const postUpdated = await post.save();
-    response.status(200).json({ upvotes: postUpdated.upvotes });
-});
-
-postsRouter.post("/view", userExtractor, async (request, response) => {
-    const id = request.body.post;
-    const post = await Posts.findById(id);
-    if (!post) {
-        throw { name: "notFoundError" };
-    }
-    const views = await Views.findById(post.views);
-    // console.log("Views:", views);
-
-    const hadSeen = views.users.findIndex((user) => {
-        // console.log(user.userid.toString());
-        return user.userid.toString() === request.user._id.toString();
-    });
-
-    if (hadSeen === -1) {
-        views.users = views.users.concat({
-            userid: request.user._id,
-        });
-    } else {
-        views.users[hadSeen] = {
-            ...views.users[hadSeen]._doc,
-            last_viewed: Date.now(),
-        };
-    }
-    await views.save();
-    response.status(200).end();
-});
-
+//Deletes the post from database.
 postsRouter.delete(
     "/:id",
     userExtractor,
     postExtractor,
     async (request, response) => {
         await Posts.findByIdAndDelete(request.params.id);
-        response.status(204).json({ message: "successful deletion" });
+        response.status(204).end();
     }
 );
 

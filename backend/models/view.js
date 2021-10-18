@@ -3,22 +3,19 @@
 const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 
-const viewSchema = mongoose.Schema({
-    users: [
-        {
-            userid: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-            first_viewed: {
-                type: Date,
-                default: Date.now,
-                required: "Must have the date when the post was first seen",
-            },
-            last_viewed: {
-                type: Date,
-                default: Date.now,
-                required: "Must have the date when the post was last seen",
-            },
-        },
-    ],
+const viewSchema = mongoose.Schema({ 
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    post:{ type: mongoose.Schema.Types.ObjectId, ref: "Posts" },
+    first_viewed: {
+        type: Date,
+        default: Date.now,
+        required: "Must have the date when the post was first seen",
+    },
+    last_viewed: {
+        type: Date,
+        default: Date.now,
+        required: "Must have the date when the post was last seen",
+    },
 });
 
 viewSchema.plugin(uniqueValidator);

@@ -6,6 +6,7 @@ const config = require("./config");
 const Comment = require("../models/comments");
 const Reply = require("../models/replies");
 const Posts = require("../models/posts");
+const { sortQueryHandler } = require("./queryHandler");
 
 const errorHandler = (error,request, response,next) => {
     logger.error(error);
@@ -26,7 +27,7 @@ const errorHandler = (error,request, response,next) => {
     case "TokenExpiredError":
         return response.status(401).json({ error: error.message });
     }
-    next(error);
+    next();
 };
 
 const unknownEndPointHandler = (request, response) => {
@@ -94,15 +95,17 @@ const replyExtractor = async (request, response, next) => {
 };
 
 const paginationHelper = (request, response, next) => {
-    request.body.offset = !request.query.offset?Number(request.query.offset): 0;
+    request.body.offset = !parseInt(request.query.offset)?0:Number(request.query.offset);
     request.body.limit =
-        !request.query.limit ||
+        !parseInt(request.query.limit) ||
             request.query.limit > 10 ||
             request.query.limit < 0
             ? 10
             : Number(request.query.limit);
+    request.body.sortBy = sortQueryHandler(request.query.sortBy);
     next();
 };
+
 
 module.exports = {
     errorHandler,

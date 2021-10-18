@@ -17,27 +17,6 @@ const userSchema = new mongoose.Schema({
         unique: true,
     },
     passwordHash: String,
-    posts: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Posts",
-            default: [],
-        },
-    ],
-    communities: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Community",
-            default: [],
-        },
-    ],
-    comments: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Comment",
-            default: [],
-        },
-    ],
 });
 
 userSchema.plugin(uniqueValidator);
