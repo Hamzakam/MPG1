@@ -27,15 +27,17 @@ postsRouter.get("/", async (request, response) => {
     /*
      * query for Most popular: 
      */
-    const dbQuery = community?{community:community}:{};
-    /*
-     * const mostPopular = {
-     *     $sort:{upvotes}    
-     * ;
-     */
-    const posts = await Posts.find(dbQuery)
-        .skip(request.body.offset * request.body.limit)
-        .limit(request.body.limit);
+    
+    const dbQuery = community?{community:mongoose.Types.ObjectId(community)}:{};
+    
+    const mostPopular = {
+        $sort:{votes:-1,_id:1}    
+      
+    };
+    const limitQuery = { "$limit": request.body.limit};
+    const skipQuery = { "$skip": request.body.offset * request.body.limit };
+    console.log([{$match:dbQuery},mostPopular,limitQuery,skipQuery]);
+    const posts = await Posts.aggregate([{$match:dbQuery},mostPopular,limitQuery,skipQuery]);
     
     response.status(200).json(posts);
 });
@@ -64,20 +66,25 @@ postsRouter.post(
 
 //Create a vote for the post in the db.
 postsRouter.post("/vote", userExtractor,postExtractor, async (request, response) => {
-    const vote = await Votes.updateOne({
+    const vote = await Votes.findOne({
         user:request.user._id,
         post:request.post._id
-    },{
+    });
+    const voteFactor = vote?(-vote.vote):0;
+    const voteQuery = vote?{_id:vote._id}:{};
+    await Votes.updateOne(voteQuery,{
         user:request.user._id,
         post:request.post._id,
         vote:request.body.vote
     },
     {
         runValidators: true,
+        upsert:true,
         new: true,
-        upsert:true
+
     });
-    response.status(201).json(vote);
+    const updatedPost = await Posts.findByIdAndUpdate(request.post._id,{$inc:{votes:request.body.vote+voteFactor}},{new:true});   
+    response.status(201).json({votes:updatedPost.votes});
 });
 
 //Returns vote count for the requested post.

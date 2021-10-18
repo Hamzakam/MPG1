@@ -48,7 +48,7 @@ communityRouter.get("/search", async (request, response) => {
         {
             name: 1,
             description: 1,
-        }
+        },
     )
         .skip(request.body.offset * request.body.limit)
         .limit(request.body.limit);

@@ -94,7 +94,7 @@ const replyExtractor = async (request, response, next) => {
 };
 
 const paginationHelper = (request, response, next) => {
-    request.body.offset = !parseInt(request.body.offset)?0:Number(request.query.offset);
+    request.body.offset = !parseInt(request.query.offset)?0:Number(request.query.offset);
     request.body.limit =
         !parseInt(request.query.limit) ||
             request.query.limit > 10 ||

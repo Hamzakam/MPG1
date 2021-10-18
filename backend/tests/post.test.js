@@ -317,7 +317,10 @@ describe("check if upvotes are working", () => {
         const votes = await api.get(voteUrl)
             .send({post:posts[0]._id})
             .expect(200);
+        const postsAfter = await postsInDb();
+        expect(postsAfter[0].votes).toBe(1);
         expect(votes.body.votes).toBe(1);
+        
     });
 
     test("if multiple logged in users can upvote", async () => {
@@ -348,7 +351,9 @@ describe("check if upvotes are working", () => {
         const votes = await api.get(voteUrl)
             .send({post:posts[0]._id})
             .expect(200);
+        const postsAfter = await postsInDb();
         expect(votes.body.votes).toBe(0);
+        expect(postsAfter[0].votes).toBe(0);
     });
     test("downvoting works", async () => {
         const { username, password } = helperLists.userList[0];
@@ -364,7 +369,9 @@ describe("check if upvotes are working", () => {
         const votes = await api.get(voteUrl)
             .send({post:posts[0]._id})
             .expect(200);
+        const postsAfter = await postsInDb();
         expect(votes.body.votes).toBe(-1);
+        expect(postsAfter[0].votes).toBe(-1);
     });
     test("remove vote works", async () => {
         const { username, password } = helperLists.userList[0];
@@ -380,7 +387,9 @@ describe("check if upvotes are working", () => {
         const votes = await api.get(voteUrl)
             .send({post:posts[0]._id})
             .expect(200);
+        const postsAfter = await postsInDb();
         expect(votes.body.votes).toBe(0);
+        expect(postsAfter[0].votes).toBe(0);
     });
     test("upvoting then downvoting works", async () => {
         const { username, password } = helperLists.userList[0];
@@ -401,6 +410,8 @@ describe("check if upvotes are working", () => {
         const votes = await api.get(voteUrl)
             .send({post:posts[0]._id})
             .expect(200);
+        const postsAfter = await postsInDb();
+        expect(postsAfter[0].votes).toBe(-1);
         expect(votes.body.votes).toBe(-1);
     });
     test("downvoting then upvoting works", async () => {
@@ -422,6 +433,8 @@ describe("check if upvotes are working", () => {
         const votes = await api.get(voteUrl)
             .send({post:posts[0]._id})
             .expect(200);
+        const postsAfter = await postsInDb();
+        expect(postsAfter[0].votes).toBe(1);
         expect(votes.body.votes).toBe(1);
     });
     test("upvoting then removing vote works", async () => {
@@ -443,6 +456,8 @@ describe("check if upvotes are working", () => {
         const votes = await api.get(voteUrl)
             .send({post:posts[0]._id})
             .expect(200);
+        const postsAfter = await postsInDb();
+        expect(postsAfter[0].votes).toBe(0);
         expect(votes.body.votes).toBe(0);
     });
     test("downvoting then removing vote works", async () => {
@@ -464,6 +479,8 @@ describe("check if upvotes are working", () => {
         const votes = await api.get(voteUrl)
             .send({post:posts[0]._id})
             .expect(200);
+        const postsAfter = await postsInDb();
+        expect(postsAfter[0].votes).toBe(0);
         expect(votes.body.votes).toBe(0);
     });
 });

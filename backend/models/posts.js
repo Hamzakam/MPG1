@@ -16,7 +16,7 @@ const postsSchema = mongoose.Schema({
         minLength: 10,
         maxLength: 300,
     },
-    upvotes: {
+    votes: {
         type: Number,
         default: 0,
     },
