@@ -29,15 +29,10 @@ postsRouter.get("/", async (request, response) => {
      */
     
     const dbQuery = community?{community:mongoose.Types.ObjectId(community)}:{};
-    
-    const mostPopular = {
-        $sort:{votes:-1,_id:1}    
-      
-    };
     const limitQuery = { "$limit": request.body.limit};
     const skipQuery = { "$skip": request.body.offset * request.body.limit };
-    console.log([{$match:dbQuery},mostPopular,limitQuery,skipQuery]);
-    const posts = await Posts.aggregate([{$match:dbQuery},mostPopular,limitQuery,skipQuery]);
+    // console.log([{$match:dbQuery},oldest,limitQuery,skipQuery]);
+    const posts = await Posts.aggregate([{$match:dbQuery},request.body.sortBy,limitQuery,skipQuery]);
     
     response.status(200).json(posts);
 });

@@ -19,7 +19,9 @@ communityRouter.post("/", userExtractor, async (request, response) => {
 communityRouter.get("/", async (request, response) => {
     const communities = request.query.name
         ? await Community.findOne({ name: request.query.name })
-        : await Community.find({});
+        : await Community.find({})
+            .skip(request.body.offset * request.body.limit)
+            .limit(request.body.limit);
     if (!communities) {
         throw { name: "notFoundError" };
     }

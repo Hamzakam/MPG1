@@ -6,6 +6,7 @@ const config = require("./config");
 const Comment = require("../models/comments");
 const Reply = require("../models/replies");
 const Posts = require("../models/posts");
+const { sortQueryHandler } = require("./queryHandler");
 
 const errorHandler = (error,request, response,next) => {
     logger.error(error);
@@ -101,12 +102,10 @@ const paginationHelper = (request, response, next) => {
             request.query.limit < 0
             ? 10
             : Number(request.query.limit);
-    request.body.sortBy = request.query.sortBy ||
-        request.query.sortBy!=="undefined"
-        ?request.query.sortBy
-        :"default";
+    request.body.sortBy = sortQueryHandler(request.query.sortBy);
     next();
 };
+
 
 module.exports = {
     errorHandler,
