@@ -46,6 +46,6 @@ app.use("/api/posts", postsRouter);
 app.use("/api/sub", communityRouter);
 app.use("/api/comments", commentRouter);
 app.use("/api/comments/r", replyRouter);
-app.use(middleware.errorHandler);
 app.use(middleware.unknownEndPointHandler);
+app.use(middleware.errorHandler);
 module.exports = app;

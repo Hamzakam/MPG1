@@ -15,22 +15,30 @@ const errorHandler = (error,request, response,next) => {
     case "ValidationError":
     case "TypeError":
     case "MongoServerError":
-        return response.status(400).json({ error: error.message });
+    case "MulterError":
+        response.status(400).json({ error: error.message });
+        break;
     case "credentialError":
-        return response.status(400).json({
+        response.status(400).json({
             error: error.message || "Invalid Credentials. Please Try again",
         });
+        break;
     case "notFoundError":
-        return response.status(404).json({ error: "No Resource Error" });
+        response.status(404).json({ error: "No Resource Error" });
+        break;
     case "unauthorizedAccessError":
     case "jsonWebTokenError":
     case "TokenExpiredError":
-        return response.status(401).json({ error: error.message });
+        response.status(401).json({ error: error.message });
+        break;
+    default:
+        response.status(500).json({error:"internal error"});
     }
     next();
 };
 
 const unknownEndPointHandler = (request, response) => {
+    
     response.status(404).json({ error: "Unknown Endpoint" });
 };
 
