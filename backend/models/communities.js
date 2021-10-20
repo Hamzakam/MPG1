@@ -12,6 +12,10 @@ const communitySchema = mongoose.Schema({
         unique: true,
         uniqueCaseInsensitive: true,
     },
+    logo:{
+        type:String,
+        required:true,
+    },
     description: {
         type: String,
         required: true,
@@ -37,6 +41,12 @@ const communitySchema = mongoose.Schema({
 });
 
 communitySchema.plugin(uniqueValidator);
+
+communitySchema.path("logo").validate((val) => {
+    const urlRegex = /(https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/;
+    return urlRegex.test(val);
+}, "Invalid URL.");
+
 communitySchema.index({ name: "text" });
 communitySchema.set("toJSON", {
     transform: (document, returnedObject) => {

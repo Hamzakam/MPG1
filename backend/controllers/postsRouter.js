@@ -17,23 +17,13 @@ require("express-async-errors");
 //Returns posts based on specified query parameters.
 postsRouter.get("/", async (request, response) => {
     const community = request.query.community;
-    /** 
-     * TODO: sort by-
-     *  Most popular
-     *  Most controversial
-     *  latest
-     *  oldest
-     */
-    /*
-     * query for Most popular: 
-     */
-    
     const dbQuery = community?{community:mongoose.Types.ObjectId(community)}:{};
-    const limitQuery = { "$limit": request.body.limit};
-    const skipQuery = { "$skip": request.body.offset * request.body.limit };
-    // console.log([{$match:dbQuery},oldest,limitQuery,skipQuery]);
-    const posts = await Posts.aggregate([{$match:dbQuery},request.body.sortBy,limitQuery,skipQuery]);
-    
+    const posts = await Posts.aggregate([
+        {$match:dbQuery}
+        ,request.body.sortBy,
+        { "$limit": request.body.limit},
+        { "$skip": request.body.offset * request.body.limit }
+    ]);
     response.status(200).json(posts);
 });
 
@@ -110,6 +100,8 @@ postsRouter.post("/view", userExtractor,postExtractor, async (request, response)
 
         }
     );
+    const userViewd = await Views.find({user:request.user._id});
+    console.log(userViewd);
     response.status(200).end();
 });
 

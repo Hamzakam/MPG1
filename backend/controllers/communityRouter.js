@@ -1,20 +1,36 @@
+//Creating community router
 const communityRouter = require("express").Router();
+//Models for document manipulation
 const Community = require("../models/communities");
 const Subscribe = require("../models/subscribe");
+//middleware for verifying user and permission for community manipulation
 const { userExtractor, communityExtractor } = require("../utils/middleware");
-
 require("express-async-errors");
 
-communityRouter.post("/", userExtractor, async (request, response) => {
-    const body = request.body;
-    const community = new Community({
-        name: body.name,
-        description: body.description,
-        user: request.user._id,
-    });
-    const communityObj = await community.save();
-    response.status(201).json(communityObj);
-});
+//Handling image upload
+const fs = require("fs");
+const { uploadToS3, uploadGeneric } = require("../utils/s3");
+const upload = uploadGeneric("community");
+
+communityRouter.post(
+    "/",
+    userExtractor,
+    upload.single("community"),
+    async (request, response) => {
+        const logoUrl = await uploadToS3(request.file);
+        console.log(logoUrl);
+        const community = new Community({
+            name: request.body.name,
+            description: request.body.description,
+            user: request.user._id,
+            logo: logoUrl.Location,
+        });
+        const communityObj = await community.save();
+        await fs.promises.unlink(request.file.path);
+        response.status(201).json(communityObj);
+    }
+);
+
 
 communityRouter.get("/", async (request, response) => {
     const communities = request.query.name
@@ -50,7 +66,7 @@ communityRouter.get("/search", async (request, response) => {
         {
             name: 1,
             description: 1,
-        },
+        }
     )
         .skip(request.body.offset * request.body.limit)
         .limit(request.body.limit);
@@ -93,17 +109,23 @@ communityRouter.post(
     userExtractor,
     communityExtractor,
     async (request, response) => {
-        const sub = await Subscribe.updateOne({
-            $and: [{ user: request.user._id }, { community: request.community._id }],
-        },{
-            user: request.user._id,
-            community: request.community._id,
-        },
-        {
-            runValidators: true,
-            new: true,
-            upsert:true
-        });
+        const sub = await Subscribe.updateOne(
+            {
+                $and: [
+                    { user: request.user._id },
+                    { community: request.community._id },
+                ],
+            },
+            {
+                user: request.user._id,
+                community: request.community._id,
+            },
+            {
+                runValidators: true,
+                new: true,
+                upsert: true,
+            }
+        );
         response.status(201).json(sub);
     }
 );
