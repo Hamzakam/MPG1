@@ -37,14 +37,12 @@ postsRouter.post(
     upload.single("postImages"),
     communityExtractor,
     async (request, response) => {
-        console.log("Control reaches in postRouteer");
         if(request.file){
             const s3Upload = await uploadToS3(request.file);
             await fs.promises.unlink(request.file.path);
             request.body.content = s3Upload.key;
             request.body.contentType = "image";
         }
-        console.log("Control reaches here");
         const postsObject = new Posts({
             title: request.body.title,
             content: request.body.content,

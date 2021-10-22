@@ -61,11 +61,13 @@ userRouter.post("/",upload.single("dp"), async (request, response) => {
 });
 
 userRouter.get("/",async(request,response)=>{
-    const users = request.query.name
-        ? await User.findOne({ name: request.query.username })
+    
+    const users = request.query.username
+        ? await User.findOne({ username: request.query.username })
         : await User.find({})
             .skip(request.body.offset * request.body.limit)
             .limit(request.body.limit);
+    
     if (!users) {
         throw { name: "notFoundError" };
     }
