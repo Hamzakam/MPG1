@@ -5,6 +5,9 @@ const emailValidator = require("@Hamzakam/deep-email-validator");
 const passwordValidator = require("password-validator");
 const { userExtractor } = require("../utils/middleware");
 const Subscribe = require("../models/subscribe");
+const {uploadToS3,uploadGeneric} = require("../utils/s3");
+const upload = uploadGeneric("dp");
+const fs = require("fs");
 
 const passSchema = new passwordValidator();
 passSchema
@@ -26,7 +29,7 @@ passSchema
 
 require("express-async-errors");
 
-userRouter.post("/", async (request, response) => {
+userRouter.post("/",upload.single("dp"), async (request, response) => {
     const body = request.body;
     if (!body.password || !passSchema.validate(body.password)) {
         throw { name: "credentialError", message: "Password too short" };
@@ -38,26 +41,36 @@ userRouter.post("/", async (request, response) => {
     if (!valid) {
         throw { name: "credentialError", message: validators[reason].reason };
     }
-
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(body.password, saltRounds);
+    let dpLocation;
+    if(request.file){
+        const s3Upload = await uploadToS3(request.file);
+        await fs.promises.unlink(request.file.path);
+        dpLocation = s3Upload.key;
+    }
+
     const user = new User({
         username: body.username,
         email: body.email,
+        dp:dpLocation,
         passwordHash,
     });
     const savedUser = await user.save();
     response.status(201).json(savedUser);
 });
 
-userRouter.get("/", async (request, response) => {
-    const users = await User.find({}).populate("posts", {
-        title: 1,
-        content: 1,
-    });
-    response.json(users);
+userRouter.get("/",async(request,response)=>{
+    const users = request.query.name
+        ? await User.findOne({ name: request.query.username })
+        : await User.find({})
+            .skip(request.body.offset * request.body.limit)
+            .limit(request.body.limit);
+    if (!users) {
+        throw { name: "notFoundError" };
+    }
+    response.status(200).json(users);
 });
-
 userRouter.get("/subscribed", userExtractor, async (request, response) => {
     const subscribed = await Subscribe.find(
         { $user: request.user._id },
