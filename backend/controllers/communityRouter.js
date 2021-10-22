@@ -12,21 +12,26 @@ const fs = require("fs");
 const { uploadToS3, uploadGeneric } = require("../utils/s3");
 const upload = uploadGeneric("community");
 
+
+//Images are at the url https://<bucketName>.s3.<bucketRegion>.amazonaws.com/<logoPath>
 communityRouter.post(
     "/",
     userExtractor,
     upload.single("community"),
     async (request, response) => {
-        const logoUrl = await uploadToS3(request.file);
-        console.log(logoUrl);
+        let logoPath;
+        if(request.file){
+            const s3Upload = await uploadToS3(request.file);
+            await fs.promises.unlink(request.file.path);
+            logoPath = s3Upload.key;
+        }
         const community = new Community({
             name: request.body.name,
             description: request.body.description,
             user: request.user._id,
-            logo: logoUrl.Location,
+            logo: logoPath,
         });
         const communityObj = await community.save();
-        await fs.promises.unlink(request.file.path);
         response.status(201).json(communityObj);
     }
 );

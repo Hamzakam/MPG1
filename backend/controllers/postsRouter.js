@@ -12,6 +12,9 @@ const {
     communityExtractor,
     postExtractor,
 } = require("../utils/middleware");
+const {uploadToS3,uploadGeneric} = require("../utils/s3");
+const upload = uploadGeneric("postImages");
+const fs = require("fs");
 require("express-async-errors");
 
 //Returns posts based on specified query parameters.
@@ -31,11 +34,21 @@ postsRouter.get("/", async (request, response) => {
 postsRouter.post(
     "/",
     userExtractor,
+    upload.single("postImages"),
     communityExtractor,
     async (request, response) => {
+        console.log("Control reaches in postRouteer");
+        if(request.file){
+            const s3Upload = await uploadToS3(request.file);
+            await fs.promises.unlink(request.file.path);
+            request.body.content = s3Upload.key;
+            request.body.contentType = "image";
+        }
+        console.log("Control reaches here");
         const postsObject = new Posts({
             title: request.body.title,
             content: request.body.content,
+            content_type:request.body.contentType,
             tags: request.body.tags,
             user: request.user._id,
             community: request.community._id,
