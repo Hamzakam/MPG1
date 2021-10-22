@@ -13,4 +13,8 @@ module.exports = {
     PORT: process.env.PORT,
     MONGODB_URI: mongoURI(process.env.NODE_ENV),
     SECRET: process.env.SECRET,
+    AWS_BUCKET_REGION:process.env.AWS_BUCKET_REGION,
+    AWS_ACCESS_KEY:process.env.AWS_ACCESS_KEY,
+    AWS_SECRET_KEY:process.env.AWS_SECRET_KEY,
+    AWS_BUCKET_NAME:process.env.AWS_BUCKET_NAME
 };

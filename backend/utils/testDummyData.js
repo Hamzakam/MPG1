@@ -2,17 +2,17 @@ const userList = [
     {
         username: "legituser",
         email: "mail.hamzakam@gmail.com",
-        password: "p@ssthisToo1",
+        password: "p@ssthisTo2o1",
     },
     {
         username: "legituser2",
         email: "hamzadafirst@gmail.com",
-        password: "p@ssthisToo1",
+        password: "p@ssthisToo14",
     },
     {
         username: "legituser3",
         email: "hamzadasecond@gmail.com",
-        password: "p@ssthisToo1",
+        password: "p@ssthisToo13",
     },
     {
         username: "fail",

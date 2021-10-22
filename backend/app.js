@@ -16,11 +16,19 @@ const cors = require("cors");
 const middleware = require("./utils/middleware");
 const config = require("./utils/config");
 const morgan = require("morgan");
+const filter = require("content-filter");
 
 const logger = require("./utils/logger");
 
 app.use(cors());
 app.use(express.json());
+
+const filterOptions = ["$","{","&&","||"];
+app.use(filter({
+    urlBlackList:filterOptions,
+    bodyBlackList:filterOptions,
+}));
+
 app.use(
     morgan(":method :url :status :res[content-length] - :response-time ms")
 );
@@ -46,6 +54,6 @@ app.use("/api/posts", postsRouter);
 app.use("/api/sub", communityRouter);
 app.use("/api/comments", commentRouter);
 app.use("/api/comments/r", replyRouter);
-app.use(middleware.errorHandler);
 app.use(middleware.unknownEndPointHandler);
+app.use(middleware.errorHandler);
 module.exports = app;
