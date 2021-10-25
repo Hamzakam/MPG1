@@ -1,9 +1,10 @@
 import React from 'react'
+import Card  from '../Card/Card.js'
 
 const Home = () => {
     return (
-        <div style={{display: 'flex',justifyContent: 'center',alignItems : 'center', height: '90vh'}}> 
-            <h1>Home</h1>
+        <div> 
+            <Card/>
         </div>
     )
 }

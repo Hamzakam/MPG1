@@ -23,6 +23,7 @@ const Navbar = () => {
                 <NavBtn>
                     <NavBtnLink to="/signin">Sign In</NavBtnLink>
                 </NavBtn>
+               
                 <SearchBar placeholder="Search" data={BookData} />
             </Nav>
             

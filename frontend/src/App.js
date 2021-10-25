@@ -12,11 +12,9 @@ const App = () => {
       <Navbar />
       <Switch>
         <Route path="/" exact component={Home} />
+        <Login/>
       </Switch>
-      <h1>PeerHub</h1>
-
-      <PostFeed />
-      <Login />
+      <PostFeed /> 
     </Router>
   );
 };
