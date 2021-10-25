@@ -1,6 +1,7 @@
+.search{
+  margin-left: 30px;
+}
 .searchInputs {
-    margin-top: 13px;
-    margin-right: 200px;
     display: flex;
   }
   
@@ -14,7 +15,6 @@
     font-size: 18px;
     padding: 15px;
     height: 41px;
-    width: 300px;
   }
   
   .searchIcon {
@@ -24,8 +24,9 @@
     border-bottom-left-radius: 0px;
     width: 50px;
     background-color: rgb(236, 112, 11);
-    display: grid;
-    place-items: center;
+    display:flex;
+    align-items: center;
+    justify-content: center;
   }
   
   input:focus {
@@ -37,7 +38,6 @@
   
   .dataResult {
     margin-top: 5px;
-    width: 300px;
     height: 200px;
     background-color: white;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
@@ -64,7 +64,7 @@
     text-decoration: none;
   }
   
-  da:hover {
+  .dataItem:hover {
     background-color: lightgrey;
   }
   
