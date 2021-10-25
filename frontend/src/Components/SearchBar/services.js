@@ -4,7 +4,7 @@ const search = async (filter, limit, offset) => {
   try {
     const response = await axios.get(
       `/api/sub/search?filter=${filter}&limit=${limit || 0}&offset=${
-        offset || 10
+        offset || 0
       }`
     );
     if (response.status === 500 || response.status === 400) {

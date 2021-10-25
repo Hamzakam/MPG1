@@ -14,7 +14,6 @@ const App = () => {
         <Route path="/" exact component={Home} />
         <Login/>
       </Switch>
-      <PostFeed /> 
     </Router>
   );
 };

@@ -15,10 +15,9 @@ export const NavLink = styled(Link)`
     display: flex;
     align-items: center;
     text-decoration: none;
-    padding: 0 1rem;
-    height: 100%;
+    padding: 0 0rem;
+    height: 101%;
     cursor: pointer;
-
     &.active {
         color:#15cdfc;
     }
@@ -36,7 +35,7 @@ export const Bars =styled(FaBars)`
         transform: translate(-100%, 75%);
         font-size: 1.8rem;
         cursor: pointer;      
-    }
+    
 `
 
 export const NavMenu = styled.div`
@@ -70,7 +69,7 @@ export const NavBtnLink = styled(Link)`
     transition: all 0.2s ease-in-out;
     text-decoration: none;
 
-    &hover {
+    &:hover {
         transition: all 0.2s ease-in-out;
         background: #fff;
         color: #010606;

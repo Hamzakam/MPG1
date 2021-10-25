@@ -29,10 +29,10 @@ export default function MultiActionAreaCard() {
         </CardContent>
       </CardActionArea>
       <CardActions>
-          <IconButton size="medium">
-            <ArrowDropUpIcon/>
+          <IconButton size="small">
+            10 <ArrowDropUpIcon/>
           </IconButton>
-          <IconButton size="medium">
+          <IconButton size="small">
             <ArrowDropDownIcon/>
           </IconButton>
           <IconButton size="small">
