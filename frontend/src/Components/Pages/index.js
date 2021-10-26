@@ -3,7 +3,9 @@ import Card  from '../Card/Card.js'
 
 const Home = () => {
     return (
-        <div> 
+        <div className="card"> 
+            <Card/>
+            <Card/>
             <Card/>
         </div>
     )

@@ -30,7 +30,12 @@ button {
 .wrapper {
     padding: 1% 3%;
 }
-.pic{
-    height: 100px;
-    width: 100px;
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
+/* .card-username{
+   margin-left: auto  !important;
+
+} */
