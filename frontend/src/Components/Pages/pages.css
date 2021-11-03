@@ -1,0 +1,12 @@
+.parentcard{
+display: flex;
+flex-direction: row;
+
+}
+.card{
+    align-items: center;
+    width: 100%;
+}
+.comcard{
+    align-items: flex-end;
+}

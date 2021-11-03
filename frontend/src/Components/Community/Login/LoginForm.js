@@ -6,7 +6,7 @@ const LoginForm = (props) => {
         <div className="loginForm wrapper">
             <form onSubmit={props.handleLoginSubmit}>
                 {props.submitting && <div>Logging you in....</div>}
-                <fieldset disabled={props.submitting}>
+                <div disabled={props.submitting}>
                     <label htmlFor="username">
                         <p>Username</p>
                         <input
@@ -27,7 +27,7 @@ const LoginForm = (props) => {
                             id="login-password"
                         />
                     </label>
-                </fieldset>
+                </div>
                 <button disabled={props.submitting} type="submit">
                     Login
                 </button>
