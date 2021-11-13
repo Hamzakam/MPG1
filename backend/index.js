@@ -7,9 +7,9 @@ const config = require("./utils/config");
 const http = require("http");
 const app = require("./app");
 const httpServer = http.createServer(app);
-
+const logger = require("./utils/logger");
 const PORT = config.PORT;
 
 httpServer.listen(PORT, () => {
-    console.log(`Running on PORT ${PORT}`);
+    logger.info(`Running on PORT ${PORT}`);
 });

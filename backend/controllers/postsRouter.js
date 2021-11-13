@@ -21,12 +21,19 @@ require("express-async-errors");
 postsRouter.get("/", async (request, response) => {
     const community = request.query.community;
     const dbQuery = community?{community:mongoose.Types.ObjectId(community)}:{};
-    const posts = await Posts.aggregate([
-        {$match:dbQuery}
-        ,request.body.sortBy,
-        { "$limit": request.body.limit},
-        { "$skip": request.body.offset * request.body.limit }
-    ]);
+    /*
+     * const posts = await Posts.aggregate([
+     *     {$match:dbQuery}
+     *     ,request.body.sortBy,
+     *     { "$limit": request.body.limit},
+     *     { "$skip": request.body.offset * request.body.limit }
+     * ]);
+     */
+    console.log(request.body.sortBy);
+    const posts = await Posts.find(dbQuery)
+        .sort(request.body.sortBy)
+        .limit(request.body.limit)
+        .skip(request.body.offset * request.body.limit);
     response.status(200).json(posts);
 });
 

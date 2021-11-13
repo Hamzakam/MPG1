@@ -4,6 +4,13 @@ const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 const { AWS_BUCKET_NAME, AWS_BUCKET_REGION } = require("../utils/config");
 
+/*
+ * function contentToUrl(content){
+ *     console.log(content);
+ *     return `https://${AWS_BUCKET_NAME}.s3.${AWS_BUCKET_REGION}.amazonaws.com/${content}`;
+ * }
+ */
+
 const postsSchema = mongoose.Schema({
     title: {
         type: String,
@@ -16,6 +23,7 @@ const postsSchema = mongoose.Schema({
         required: true,
         minLength: 10,
         maxLength: 300,
+        // get:contentToUrl
     },
     content_type:{
         type:String,
@@ -57,15 +65,16 @@ postsSchema.path("content_type").validate((contentType)=>{
     let allowedTypes = ["image","text"];
     return allowedTypes.includes(contentType.toLowerCase());
 });
+
+ 
 postsSchema.set("toJSON", {
     transform: (document, returnedObject) => {
         returnedObject.id = returnedObject._id.toString();
-        if(returnedObject.content_type.toLowerCase()==="image"){
+        if(returnedObject.content_type==="image"){
             returnedObject.content = `https://${AWS_BUCKET_NAME}.s3.${AWS_BUCKET_REGION}.amazonaws.com/${returnedObject.content}`;
         }
         delete returnedObject._id;
         delete returnedObject.__v;
-        delete returnedObject.views;
     },
 });
 

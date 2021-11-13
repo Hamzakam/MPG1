@@ -17,9 +17,9 @@ const userSchema = new mongoose.Schema({
         uniqueCaseInsensitive: true,
         unique: true,
     },
-    dp:{
-        type:String,
-        default:"dp/default"
+    dp: {
+        type: String,
+        default: "dp/default",
     },
     passwordHash: String,
 });
