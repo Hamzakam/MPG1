@@ -17,6 +17,7 @@ commentRouter.post(
             content: body.content,
             post: request.post._id,
             user: request.user._id,
+            username:request.user.username,
         });
         const commentObj = await comment.save();
         request.post.comments = request.post.comments.concat(commentObj._id);

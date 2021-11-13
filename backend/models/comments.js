@@ -20,6 +20,7 @@ const commentSchema = mongoose.Schema({
     },
     post: { type: mongoose.Schema.Types.ObjectId, ref: "Posts" },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    username:String,
     replies: [
         {
             type: mongoose.Schema.Types.ObjectId,

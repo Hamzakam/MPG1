@@ -29,6 +29,7 @@ communityRouter.post(
             name: request.body.name,
             description: request.body.description,
             user: request.user._id,
+            username:request.user.username,
             logo: logoPath,
         });
         const communityObj = await community.save();

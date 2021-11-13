@@ -51,7 +51,9 @@ const postsSchema = mongoose.Schema({
         },
     ],
     community: { type: mongoose.Schema.Types.ObjectId, ref: "Community" },
+    community_name:String,
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    username:String,
     comments: [
         {
             type: mongoose.Schema.Types.ObjectId,

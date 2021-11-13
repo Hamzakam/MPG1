@@ -20,6 +20,7 @@ const replySchema = mongoose.Schema({
     },
     post: { type: mongoose.Schema.Types.ObjectId, ref: "Posts" },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    username:String,
     parent: { type: mongoose.Schema.Types.ObjectId, ref: "Comment" },
 });
 
