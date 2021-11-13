@@ -12,27 +12,25 @@ import Share from '@mui/icons-material/Share';
 import Img from './images.jpg'
 import { ImagesearchRoller } from '@mui/icons-material';
 
-export default function MultiActionAreaCard() {
+
+export default function MultiActionAreaCard({post}) {
   return (
-    <Card sx={{margin: 2.5,boxShadow: 5,width:"60%" }}>
+    <Card sx={{margin: 2.5,boxShadow: 5,width:"60%" }} key= {post.id}>
       <CardActionArea>
       <CardContent>
-          <Typography gutterBottom variant="h6" display="inline" align="left"  st>
-            Community
-          </Typography>
-          <Typography gutterBottom variant="h7" display="inline" align="left">
-            author
-          </Typography>
           <Typography gutterBottom variant="h4" align="Left">
-             Title
+            {post.title}
+          </Typography>
+          <Typography gutterBottom variant="h6" align="left"  st>
+            {post.community}
+          </Typography>
+          <Typography gutterBottom variant="h7" display="grid" align="left">
+            {post.user}
+          </Typography>
+          <Typography>
+            {post.content}
           </Typography>
         </CardContent>
-        <CardMedia
-          component="img"
-          height="200"
-          image={Img}
-          alt="Image"
-        />
       </CardActionArea>
       <CardActions>
           <IconButton size="small">

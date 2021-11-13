@@ -1,14 +1,12 @@
 import React from 'react'
-import Card  from '../Card/Card.js'
+import Cardfeed from '../Card/Cardfeed'
 import ComCard from '../SubCom/ComCard';
 import './pages.css'
 const Home = () => {
     return (
         <div className="parentcard">
         <div className="card" > 
-            <Card/>
-            <Card/>
-            <Card/>
+            <Cardfeed/>
             
         </div>
 

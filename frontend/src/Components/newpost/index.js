@@ -96,11 +96,11 @@ export default class NewPost extends Component {
 
   render() {
     const {isAuthenticated, isLoading, error} = this.props;
-    // if (!isAuthenticated) {
-    //   return (
-    //     <div className="newPost-none">{'Please sign in to post a reply'}</div>
-    //   );
-    // }
+    if (!isAuthenticated) {
+      return (
+        <div className="newPost-none">{'Please sign in to post a reply'}</div>
+      );
+    }
     const {editorState} = this.state;
     const statusMessage = (
       <StatusMessage
