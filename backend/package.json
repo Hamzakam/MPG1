@@ -4,7 +4,7 @@
     "description": "Community based platform",
     "main": "index.js",
     "scripts": {
-        "start": "cross-env NODE_ENV=prod node index.js",
+        "start": "NODE_ENV=prod node index.js",
         "dev": "cross-env NODE_ENV=development nodemon index.js",
         "lint": "eslint .",
         "test": "cross-env NODE_ENV=test jest --verbose --runInBand",
@@ -12,7 +12,6 @@
         "deploy": "git push heroku main",
         "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push heroku main && npm run deploy",
         "logs:prod": "heroku logs --tail"
-
     },
     "author": "Amit Ranjan,Ananya Tapi,Ashutosh Pandey,Hamza Kamal",
     "license": "MIT",
