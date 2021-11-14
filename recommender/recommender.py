@@ -111,4 +111,4 @@ def recommender(user_id, user_profile = user_profile, post_profile = post_profil
         else:
             print("Explore more posts and communities to get recommendations.")
             break
-# recommender(users[0])
+recommender(users[0])
