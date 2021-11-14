@@ -20,7 +20,10 @@ const filter = require("content-filter");
 
 const logger = require("./utils/logger");
 
+
+
 app.use(cors());
+app.use(express.static("build"));
 app.use(express.json());
 
 const filterOptions = ["$","{","&&","||"];
