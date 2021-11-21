@@ -3,5 +3,7 @@ frontend/node_modules
 backend/.env
 recommender/.ipynb_checkpoints/
 recommender/__pycache__/
+recommender/connStr.py
+recommender/recommender.ipynb
 backend/utils/.ipynb_checkpoints/
 backend/controllers/.ipynb_checkpoints/

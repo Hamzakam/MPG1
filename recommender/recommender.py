@@ -2,10 +2,11 @@
 import pandas as pd
 import pymongo
 import numpy as np
+from connStr import conn_str
+from pymongo import MongoClient
 from sklearn.metrics.pairwise import cosine_similarity
 
 # Connecting to the Database via pymongo client
-conn_str = "mongodb+srv://peerhubworks:peerhub@cluster0.hydha.mongodb.net/dev?retryWrites=true&w=majority"
 pymongo.database
 client = pymongo.MongoClient(conn_str, serverSelectionTimeoutMS=5000)
 db = client.dev
@@ -105,10 +106,10 @@ def recommender(user_id, user_profile = user_profile, post_profile = post_profil
                     recommendations.append([i[0], j])
             if len(recommendations) == 10:
                 break
-        if len(recommendations) >= 1:
+        if len(recommendations) >= 10:
             for i in recommendations:
                 print(i)
         else:
             print("Explore more posts and communities to get recommendations.")
             break
-recommender(users[0])
+# recommender(users[0])
