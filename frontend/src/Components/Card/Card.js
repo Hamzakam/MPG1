@@ -15,17 +15,17 @@ import { ImagesearchRoller } from '@mui/icons-material';
 
 export default function MultiActionAreaCard({post}) {
   return (
-    <Card sx={{margin: 2.5,boxShadow: 5,width:"60%" }} key= {post.id}>
+    <Card sx={{margin: 2.5,boxShadow: 5,width:"100%" }} key= {post.id}>
       <CardActionArea>
       <CardContent>
           <Typography gutterBottom variant="h4" align="Left">
             {post.title}
           </Typography>
           <Typography gutterBottom variant="h6" align="left"  st>
-            {post.community}
+            {post.community.name}
           </Typography>
           <Typography gutterBottom variant="h7" display="grid" align="left">
-            {post.user}
+            {post.user.username}
           </Typography>
           <Typography>
             {post.content}
@@ -34,7 +34,7 @@ export default function MultiActionAreaCard({post}) {
       </CardActionArea>
       <CardActions>
           <IconButton size="small">
-            10 <ArrowDropUpIcon/>
+            {post.votes} <ArrowDropUpIcon/>
           </IconButton>
           <IconButton size="small">
             <ArrowDropDownIcon/>
