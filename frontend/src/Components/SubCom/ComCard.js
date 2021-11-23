@@ -13,7 +13,7 @@ export default function MultiActionAreaCard() {
       <CardActionArea>
         <CardContent>
           <Typography gutterBottom variant="h8" component="div">
-            Lizard is here wow we are dumb
+            The recommendation system will show the content on this part.
           </Typography>
         </CardContent>
       </CardActionArea>

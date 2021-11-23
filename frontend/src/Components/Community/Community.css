@@ -1,31 +1,45 @@
-.Title{
-    background-color: rgba(63,59,58,255)
-    ;
-    border: 0;
+.community-form{
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    margin: 20px;
+}
+.title{
+    border: 0.5px solid black;
     border-radius: 4px;
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
     font-size: 18px;
     padding: 15px;
     height: 41px;
-    width: 300px;
     display: flex;
     align-items: flex-end;
-    margin-left: 10px;
     margin-top: 10px;
+    margin-bottom:10px;
 }
-.Tags{
-    background-color: rgba(63,59,58,255)
-    ;
-    border: 0;
+
+.community-form-desc{
+    font-size: 18px;
+    border: 0.5px solid black;
     border-radius: 4px;
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
-    font-size: 18px;
-    padding: 15px;
-    height: 41px;
-    width: 300px;
-    display: flex;
-    margin-top: 10px;
-    margin-left: 10px;
+    padding:15px;
 }
+
+.community-form-submit{
+    border-radius: 4px;
+    background: rgb(236, 112, 11);
+    padding: 10px 22px;
+    height: 41px;
+    width:30%;
+    font-size: 19px;
+    color: #fff;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    text-decoration: none;
+    margin-top:10px;
+}
+

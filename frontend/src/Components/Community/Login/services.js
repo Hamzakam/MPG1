@@ -7,7 +7,7 @@ const login = async (credentials) => {
             throw response.body.error;
         }
         if (response.data.token) {
-            localStorage.setItem("user", JSON.stringify(response.data.token));
+            localStorage.setItem("user", response.data.token);
         }
         return response.data;
     } catch (error) {

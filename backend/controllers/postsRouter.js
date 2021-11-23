@@ -33,7 +33,9 @@ postsRouter.get("/", async (request, response) => {
     const posts = await Posts.find(dbQuery)
         .sort(request.body.sortBy)
         .limit(request.body.limit)
-        .skip(request.body.offset * request.body.limit);
+        .skip(request.body.offset * request.body.limit)
+        .populate("user",{username:1})
+        .populate("community",{name:1});
     response.status(200).json(posts);
 });
 
