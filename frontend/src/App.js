@@ -1,7 +1,6 @@
 import "./App.css";
 import { useState, useEffect } from "react";
 import Navbar from "./Components/Navbar";
-import PostFeed from "./Components/Post/Post";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Home from "./Components/Pages";
 import Modal from "./Components/Community/Login/Modal/Modal";
