@@ -9,7 +9,7 @@
         "lint": "eslint .",
         "test": "cross-env NODE_ENV=test jest --verbose --runInBand",
         "build:ui": "rm -rf build && cd ../frontend && npm run build --prod && cp -r build ../backend && cd ../backend",
-        "deploy": "cd .. && git subtree push --prefix backend heroku heroku-deploy:main",
+        "deploy": "cd .. && git push heroku `git subtree split --prefix backend heroku-deploy`:main --force",
         "deploy:full": "npm run build:ui && git checkout heroku-deploy && git add . && git commit -m uibuild && npm run deploy",
         "logs:prod": "heroku logs --tail"
 
