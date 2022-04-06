@@ -10,7 +10,6 @@ const sortQueryHandler = (sortBy)=>{
     case "latest":
     default:
         return {created_at:-1,_id:1};    
-        
     }
 };
 
