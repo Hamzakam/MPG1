@@ -13,7 +13,7 @@ export default function MultiActionAreaCard() {
       <CardActionArea>
         <CardContent>
           <Typography gutterBottom variant="h8" component="div">
-            The recommendation system will show the content on this part.
+            The recommendation system will show the content on this section.
           </Typography>
         </CardContent>
       </CardActionArea>

@@ -8,7 +8,6 @@ import Home from "../../../Pages";
 
 export default function Modal() {
   const [modal, setModal] = useState(true);
-
   const toggleModal = () => {
     setModal(!modal);
   };
