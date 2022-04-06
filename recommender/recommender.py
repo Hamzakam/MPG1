@@ -104,12 +104,12 @@ def recommender(user_id, user_profile = user_profile, post_profile = post_profil
             for j in tag_post:
                 if j not in user_posts:
                     recommendations.append([i[0], j])
-            if len(recommendations) == 10:
+            if len(recommendations) == 1:
                 break
-        if len(recommendations) >= 10:
-            for i in recommendations:
-                print(i)
+        if recommendations:
+            return recommendations
         else:
-            print("Explore more posts and communities to get recommendations.")
-            break
+            return "Explore more posts and communities to get recommendations."
+
+            
 # recommender(users[0])
