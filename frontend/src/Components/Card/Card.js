@@ -30,6 +30,7 @@ export default function MultiActionAreaCard({post}) {
           <Typography>
             {post.content}
           </Typography>
+          
         </CardContent>
       </CardActionArea>
       <CardActions>

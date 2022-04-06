@@ -1,21 +1,26 @@
 // import axios from "axios";
 import { useState } from "react";
+import './Login.css'
+
 
 const LoginForm = (props) => {
     return (
-        <div className="loginForm wrapper">
+        <div className="loginForm-wrapper">
             <form onSubmit={props.handleLoginSubmit}>
                 {props.submitting && <div>Logging you in....</div>}
                 <div disabled={props.submitting}>
                     <label htmlFor="username">
+                        
                         <p>Username</p>
-                        <input
-                            value={props.username}
-                            onChange={(e) => props.setUsername(e.target.value)}
-                            type="text"
-                            name="username"
-                            id="username"
-                        />
+                        <div className="userinput">
+                            <input
+                                value={props.username}
+                                onChange={(e) => props.setUsername(e.target.value)}
+                                type="text"
+                                name="username"
+                                id="username"
+                            />
+                        </div> 
                     </label>
                     <label htmlFor="password">
                         <p>Password</p>
@@ -28,9 +33,11 @@ const LoginForm = (props) => {
                         />
                     </label>
                 </div>
-                <button disabled={props.submitting} type="submit">
-                    Login
-                </button>
+                <div className="btn">
+                    <button disabled={props.submitting} type="submit">
+                        Login
+                    </button>
+                </div>
             </form>
         </div>
     );

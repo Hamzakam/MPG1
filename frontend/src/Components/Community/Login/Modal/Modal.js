@@ -26,7 +26,7 @@ export default function Modal() {
         <div className="modal">
           <div onClick={toggleModal} className="overlay"></div>
           <div className="modal-content">
-          <IconButton size="small" className="close-modal" onClick={toggleModal}>
+          <IconButton size="big" className="close-modal" onClick={toggleModal}>
             <CloseIcon/>
           </IconButton>
           <Login/>

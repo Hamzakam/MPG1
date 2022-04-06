@@ -2,6 +2,7 @@ import { useState } from "react";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import { login, register } from "./services";
+import './Login.css'
 const Login = () => {
     const [submitting, setSubmitting] = useState(false);
     const [username, setUsername] = useState("");
@@ -32,36 +33,41 @@ const Login = () => {
         submitTimeOut();
     };
     return (
-        <div className="login-wrapper">
-            <div className="loginForm wrapper">
-                <form onSubmit={handleLoginSubmit}>
-                    {submitting && <div>Logging you in....</div>}
-                    <fieldset disabled={submitting}>
-                        <label htmlFor="username">
-                            <p>Username</p>
-                            <input
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                type="text"
-                                name="username"
-                                id="username"
-                            />
-                        </label>
-                        <label htmlFor="password">
-                            <p>Password</p>
-                            <input
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                type="password"
-                                name="password"
-                                id="login-password"
-                            />
-                        </label>
-                    </fieldset>
-                    <button disabled={submitting} type="submit">
-                        Login
-                    </button>
-                </form>
+            <div className="login-wrapper">
+                <div className="loginForm-wrapper">
+                    <form onSubmit={handleLoginSubmit}>
+                        {submitting && <div>Logging you in....</div>}
+                            <label htmlFor="username">
+                                <p className="user">Username</p>
+                                <div className="userinput">
+                                        <input
+                                            value={username}
+                                            onChange={(e) => setUsername(e.target.value)}
+                                            type="text"
+                                            name="username"
+                                            height={11}
+                                            id="username"
+                                        />
+                                 </div>      
+                            </label>
+                            <label htmlFor="password">
+                                <p className="pass">Password</p>
+                                <div className="passinput">
+                                    <input
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        type="password"
+                                        name="password"
+                                        id="login-password"
+                                    />
+                                </div>
+                            </label>
+                        <div className="btn">
+                            <button disabled={submitting} type="submit">
+                            Login
+                            </button>
+                        </div>
+                    </form>
             </div>
             {/* <LoginForm
                 username={username}
